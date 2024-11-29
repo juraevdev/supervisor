@@ -1,3 +1,5 @@
+import django
+django.setup()
 from pathlib import Path
 from datetime import timedelta
 
@@ -32,7 +34,32 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'rest_framework',
     'accounts',
+    'todo',
 ]
+INSTALLED_APPS += [
+    'django_celery_beat',
+]
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # You can replace it with your choice of broker
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+
+
+CELERY_BEAT_SCHEDULE = {
+    'deactivate-expired-todos': {
+        'task': 'myapp.tasks.deactivate_expired_todos',
+        'schedule': 60.0,  # Check every minute (can be adjusted as needed)
+    },
+}
+
+
+CELERY_BEAT_SCHEDULE.update({
+    'activate-todos-at-planned-time': {
+        'task': 'myapp.tasks.activate_todos_at_planned_time',
+        'schedule': 60.0,  # Check every minute
+    },
+})
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
