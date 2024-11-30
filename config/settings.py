@@ -25,7 +25,7 @@ INSTALLED_APPS = [
     'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
-    'django.contrib.contenttypes',
+    'django.contrib.contenttypes',  # Bu yerda bo'lishi kerak
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -34,11 +34,15 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'rest_framework',
     'accounts',
+    'outcome',
     'todo',
 ]
+
+
 INSTALLED_APPS += [
     'django_celery_beat',
 ]
+
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'  # You can replace it with your choice of broker
 CELERY_ACCEPT_CONTENT = ['json']

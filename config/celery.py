@@ -3,12 +3,13 @@ import os
 from celery import Celery
 from celery import shared_task
 from datetime import datetime, timedelta
-from todo.models import Todo
 
 # Django sozlamalarini belgilash
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
 app = Celery('supervisor')
+import django
+django.setup()
 
 # Django sozlamalaridan Celery konfiguratsiyasini yuklash
 app.config_from_object('django.conf:settings', namespace='CELERY')
@@ -18,6 +19,7 @@ app.autodiscover_tasks()
 
 @shared_task
 def deactivate_expired_todos():
+    from todo.models import Todo
     expired_todos = Todo.objects.filter(
         planned_time__lte=datetime.now() - timedelta(days=1),
         active=True
@@ -28,6 +30,7 @@ def deactivate_expired_todos():
 
 @shared_task
 def activate_todos_at_planned_time():
+    from todo.models import Todo
     todos_to_activate = Todo.objects.filter(
         planned_time__lte=datetime.now(),
         active=False
