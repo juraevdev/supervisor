@@ -1,9 +1,9 @@
 from rest_framework import serializers
 from outcome.models import Outcome
 
-class OutcomeSerializer(serializers.Serializer):
-    expense = serializers.CharField()
-    amount = serializers.DecimalField()
+class OutcomeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Outcome
+        fields = '__all__'
 
-    def calculate_expenses(self, request):
-        outcome = Outcome.objects.filter()
+    

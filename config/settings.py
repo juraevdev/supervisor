@@ -1,5 +1,3 @@
-import django
-django.setup()
 from pathlib import Path
 from datetime import timedelta
 
@@ -25,7 +23,7 @@ INSTALLED_APPS = [
     'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
-    'django.contrib.contenttypes',  # Bu yerda bo'lishi kerak
+    'django.contrib.contenttypes',  
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -44,41 +42,41 @@ INSTALLED_APPS += [
 ]
 
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0'  # You can replace it with your choice of broker
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 
 
 CELERY_BEAT_SCHEDULE = {
     'deactivate-expired-todos': {
-        'task': 'myapp.tasks.deactivate_expired_todos',
-        'schedule': 60.0,  # Check every minute (can be adjusted as needed)
+        'task': 'todo.tasks.deactivate_expired_todos',
+        'schedule': 60.0,  
     },
 }
 
 
 CELERY_BEAT_SCHEDULE.update({
     'activate-todos-at-planned-time': {
-        'task': 'myapp.tasks.activate_todos_at_planned_time',
-        'schedule': 60.0,  # Check every minute
+        'task': 'todo.tasks.activate_todos_at_planned_time',
+        'schedule': 60.0,  
     },
 })
 
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-    ),
-}
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#         'rest_framework.authentication.TokenAuthentication',
+#         'rest_framework.authentication.SessionAuthentication',
+#     ),
+# }
 
-SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),  # 7 kun
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=60),
-    "ROTATE_REFRESH_TOKENS": True,
-    "BLACKLIST_AFTER_ROTATION": True,
-    "UPDATE_LAST_LOGIN": True,
-}
+# SIMPLE_JWT = {
+#     "ACCESS_TOKEN_LIFETIME": timedelta(days=7), 
+#     "REFRESH_TOKEN_LIFETIME": timedelta(days=60),
+#     "ROTATE_REFRESH_TOKENS": True,
+#     "BLACKLIST_AFTER_ROTATION": True,
+#     "UPDATE_LAST_LOGIN": True,
+# }
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

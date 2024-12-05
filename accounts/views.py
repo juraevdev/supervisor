@@ -1,8 +1,8 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 from django.utils import timezone
-from rest_framework_simplejwt.tokens import RefreshToken
-from accounts.models import CustomUser, UserConfirmation
+# from rest_framework_simplejwt.tokens import RefreshToken
+from .models import CustomUser, UserConfirmation
 from accounts.serializers import ( 
     RegisterSerializer,
     RegisterVerifySerializer,

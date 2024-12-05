@@ -3,15 +3,10 @@ from accounts.models import CustomUser
 from django.utils.timezone import localdate, now, timedelta
 
 # Create your models here.
-class Expense(models.Model):
-    expense = models.TextField()
-
-    def __str__(self):
-        return self.expense
 
 class Outcome(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    expense = models.ForeignKey(Expense, on_delete=models.CASCADE)
+    expense = models.TextField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     day = models.DateTimeField(auto_now_add=True)
 
@@ -44,4 +39,3 @@ class Outcome(models.Model):
         )
         total = outcomes.aggregate(total=models.Sum('amount'))['total']
         return total or 0.00
-    
