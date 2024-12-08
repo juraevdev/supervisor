@@ -1,5 +1,6 @@
-from rest_framework import generics, status
+from rest_framework import generics, status, permissions
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils import timezone
 # from rest_framework_simplejwt.tokens import RefreshToken
 from .models import CustomUser, UserConfirmation
@@ -83,16 +84,17 @@ class LoginApiView(generics.GenericAPIView):
         return Response(serializer.errors)
 
 class LogoutApiView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated, ]
     serializer_class = LogoutSerializer
 
     def post(self, request):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            refresh_token = serializer.data['refresh']
-            token = RefreshToken(refresh_token)
+        try:
+            refresh = request.data['refresh_token']
+            token = RefreshToken(refresh)
             token.blacklist()
             return Response({'message': 'Logged out successfully!'}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
 class PasswordResetRequestApiView(generics.GenericAPIView):
     serializer_class = PasswordResetRequestSerializer

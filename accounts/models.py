@@ -7,6 +7,7 @@ from accounts.managers import CustomUserManager
 # Create your models here.
 class CustomUser(AbstractUser):
     phone_number = models.CharField(max_length=30, unique=True)
+    email = models.EmailField(unique=True)
     username = None
     objects = CustomUserManager()
     USERNAME_FIELD = 'phone_number'

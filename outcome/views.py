@@ -11,8 +11,8 @@ class OutcomeApiView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            outcome = serializer.save()
-            total_today = outcome.calculate()  # Faqat kunlik hisob
+            outcome = serializer.save(user=request.user)
+            total_today = outcome.calculate()  
             return Response({
                 'message': 'Outcome saved successfully!',
                 'total_today': total_today,
@@ -62,6 +62,8 @@ class OutcomeDeleteApiView(generics.GenericAPIView):
 
 
 class WeeklyOutcomeApiView(generics.GenericAPIView):
+    serializer_class = OutcomeSerializer
+
     def get(self, request, *args, **kwargs):
         user = request.user
         today = now().date()
@@ -79,6 +81,8 @@ class WeeklyOutcomeApiView(generics.GenericAPIView):
         }, status=status.HTTP_200_OK)
     
 class MonthlyOutcomeApiView(generics.GenericAPIView):
+    serializer_class = OutcomeSerializer
+
     def get(self, request, *args, **kwargs):
         user = request.user
         today = now().date()
