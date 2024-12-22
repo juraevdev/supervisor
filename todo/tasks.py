@@ -1,38 +1,49 @@
 from celery import shared_task
-from datetime import datetime, timedelta
+from django.utils.timezone import now, timedelta
 from .models import Todo
-from django.core.mail import send_mail
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
+import logging
+logger = logging.getLogger(__name__)
 
 @shared_task
 def deactivate_expired_todos():
     expired_todos = Todo.objects.filter(
-        planned_time__lte=datetime.now() - timedelta(days=1),
+        planned_time__lte=now() - timedelta(days=1),
         active=True
     )
+    logger.info(f"Found {expired_todos.count()} expired todos.")
     for todo in expired_todos:
         todo.active = False
         todo.delete()
+        logger.info(f"Todo {todo.id} deactivated.")
 
 @shared_task
 def activate_todos_at_planned_time():
-    todos_to_activate = Todo.objects.filter(
-        planned_time__lte=datetime.now(),
+    todos_to_notify = Todo.objects.filter(
+        planned_time__lte=now(),
         active=False
     )
-    for todo in todos_to_activate:
+    logger.info(f"{todos_to_notify.count()} todos found for activation.")
+    for todo in todos_to_notify:
         todo.active = True
         todo.save()
+        send_notification.delay(todo.id)
+        logger.info(f"Todo {todo.id} activated and notification sent.")
+
 
 @shared_task
 def send_notification(todo_id):
-    try:
-        todo = Todo.objects.get(id=todo_id)
-        send_mail(
-            subject=f"Reminder: {todo.name}",
-            message=f"It is time to do your task: {todo.name}",
-            from_email='noreply@juraevdevpy@gmail.com',
-            recipient_list=[todo.author.email],
-        )
-    except Todo.DoesNotExist:
-        print("Todo not found")
+    todo = Todo.objects.get(id=todo_id)
+    channel_layer = get_channel_layer()
+
+    async_to_sync(channel_layer.group_send)(
+        f"user_{todo.author.id}",
+        {
+            "type": "send_notification",
+            "message": f"It is time to: {todo.name}",
+        }
+    )
+
         

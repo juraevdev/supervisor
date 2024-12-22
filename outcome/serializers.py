@@ -7,6 +7,6 @@ class OutcomeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Outcome
-        fields = ['user', 'expense', 'amount', 'day']
+        fields = ['id', 'user', 'expense', 'amount', 'day']
 
     

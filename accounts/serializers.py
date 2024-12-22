@@ -49,7 +49,6 @@ class PasswordResetRequestSerializer(serializers.Serializer):
     phone_number = serializers.CharField()
 
 class PasswordResetVerifySerializer(serializers.Serializer):
-    phone_number = serializers.CharField()
     code = serializers.CharField()
 
 class PasswordResetSerializer(serializers.Serializer):

@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.generic import TemplateView
 from accounts.views import (
     RegisterApiView,
     RegisterVerifyApiView,
@@ -7,7 +8,8 @@ from accounts.views import (
     LogoutApiView,
     PasswordResetRequestApiView,
     PasswordResetVerifyApiView,
-    PasswordResetApiView
+    PasswordResetApiView,
+    UserProfileApiView,
 )
 
 urlpatterns = [
@@ -19,4 +21,6 @@ urlpatterns = [
     path('password/request/', PasswordResetRequestApiView.as_view()),
     path('password/verify/', PasswordResetVerifyApiView.as_view()),
     path('password/reset/', PasswordResetApiView.as_view()),
+    path('', TemplateView.as_view(template_name='frontend/build/index.html')),
+    path('profile/', UserProfileApiView.as_view()),
 ]

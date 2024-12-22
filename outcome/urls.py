@@ -5,7 +5,8 @@ from outcome.views import (
     OutcomeUpdateApiView,
     OutcomeDeleteApiView,
     WeeklyOutcomeApiView,
-    MonthlyOutcomeApiView
+    MonthlyOutcomeApiView,
+    DailyOutcomeApiView,
 )
 
 urlpatterns = [
@@ -15,4 +16,5 @@ urlpatterns = [
     path('outcomes/delete/<int:id>/', OutcomeDeleteApiView.as_view()),
     path('weekly/', WeeklyOutcomeApiView.as_view()),
     path('monthly/', MonthlyOutcomeApiView.as_view()),
+    path('daily/', DailyOutcomeApiView.as_view()),
 ]

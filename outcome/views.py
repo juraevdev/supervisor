@@ -1,12 +1,14 @@
+from django.shortcuts import render
 from django.db import models
-from rest_framework import generics, status
+from rest_framework import generics, status, permissions
 from outcome.serializers import OutcomeSerializer
 from rest_framework.response import Response
 from outcome.models import Outcome
-from django.utils.timezone import now, timedelta
+from django.utils.timezone import now, timedelta, localdate
 # Create your views here.
 class OutcomeApiView(generics.GenericAPIView):
     serializer_class = OutcomeSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -48,17 +50,6 @@ class OutcomeDeleteApiView(generics.GenericAPIView):
         outcome = Outcome.objects.get(id=id)
         outcome.delete()
         return Response({'message': 'Outcome deleted successfully!'}, status=status.HTTP_200_OK)
-        
-    
-
-
-# class WeeklyOutcomeApiView(generics.GenericAPIView):
-#     def get(self, request, *args, **kwargs):
-#         user = request.user
-#         weekly_total = Outcome.objects.filter(user=user).first().calculate_weekly()
-#         if weekly_total is None:
-#             return Response({"message": "Sizda hali haftalik hisobot yo'q"})
-#         return Response({'weekly_total': weekly_total}, status=status.HTTP_200_OK)
 
 
 class WeeklyOutcomeApiView(generics.GenericAPIView):
@@ -96,3 +87,12 @@ class MonthlyOutcomeApiView(generics.GenericAPIView):
             'monthly_total': total or 0.00,
             'outcomes': OutcomeSerializer(outcomes, many=True).data
         }, status=status.HTTP_200_OK) 
+    
+
+class DailyOutcomeApiView(generics.GenericAPIView):   
+    serializer_class = OutcomeSerializer 
+    def get(self, request):
+        date = request.GET.get('date', localdate())
+        outcomes = Outcome.objects.filter(user=request.user, day__date=date)
+        total = outcomes.aggregate(total=models.Sum('amount'))['total']
+        return Response({'total': total or 0.00, 'outcomes': OutcomeSerializer(outcomes, many=True).data}, status=status.HTTP_200_OK)

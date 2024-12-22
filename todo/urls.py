@@ -1,5 +1,10 @@
-from django.urls import path
+from django.urls import path, re_path
+from . import consumers
 from . import views
+
+websocket_urlpatterns = [
+    re_path(r'ws/notifications/$', consumers.NotificationConsumer.as_asgi()),
+]
 
 urlpatterns = [
     path('create/', views.TodoCreateApiView.as_view()),

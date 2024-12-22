@@ -2,6 +2,7 @@ from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils import timezone
+from rest_framework.views import APIView
 # from rest_framework_simplejwt.tokens import RefreshToken
 from .models import CustomUser, UserConfirmation
 from accounts.serializers import ( 
@@ -67,24 +68,26 @@ class LoginApiView(generics.GenericAPIView):
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            phone_number = serializer.data['phone_number']
-            password = serializer.data['password']
+            phone_number = serializer.validated_data['phone_number']
+            password = serializer.validated_data['password']
+
             user = CustomUser.objects.filter(phone_number=phone_number, is_active=True).first()
             if user is None:
                 return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-            if user and user.check_password(password):
-                refresh = RefreshToken.for_user(user)
-                return Response({
-                    "refresh": str(refresh),
-                    "access": str(refresh.access_token)
-                })
-            return Response({'error': 'Invalid credentials'})
-            if user is None:
-                return Response({'message': 'User not found'})
-        return Response(serializer.errors)
+            
+            if not user.check_password(password):
+                return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+            
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                "refresh": str(refresh),
+                "access": str(refresh.access_token)
+            })
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LogoutApiView(generics.GenericAPIView):
-    permission_classes = [permissions.IsAuthenticated, ]
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = LogoutSerializer
 
     def post(self, request):
@@ -116,9 +119,8 @@ class PasswordResetVerifyApiView(generics.GenericAPIView):
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            phone_number = serializer.data['phone_number']
             code = serializer.data['code']
-            user = CustomUser.objects.filter(phone_number=phone_number).first()
+            user = request.user
             otp_code = UserConfirmation.objects.filter(code=code).first()
             if user is None:
                 return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -147,3 +149,14 @@ class PasswordResetApiView(generics.GenericAPIView):
             user.save()
             return Response({'message': 'Your password changed successfully'})
         return Response(serializer.errors)
+    
+class UserProfileApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        return Response({
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "phone_number": user.phone_number,
+        })
