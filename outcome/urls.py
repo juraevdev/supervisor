@@ -7,6 +7,7 @@ from outcome.views import (
     WeeklyOutcomeApiView,
     MonthlyOutcomeApiView,
     DailyOutcomeApiView,
+    SelectedDateApiView,
 )
 
 urlpatterns = [
@@ -17,4 +18,5 @@ urlpatterns = [
     path('weekly/', WeeklyOutcomeApiView.as_view()),
     path('monthly/', MonthlyOutcomeApiView.as_view()),
     path('daily/', DailyOutcomeApiView.as_view()),
+    path('selected_date/', SelectedDateApiView.as_view()),
 ]

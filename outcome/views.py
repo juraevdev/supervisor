@@ -1,10 +1,9 @@
-from django.shortcuts import render
 from django.db import models
 from rest_framework import generics, status, permissions
 from outcome.serializers import OutcomeSerializer
 from rest_framework.response import Response
 from outcome.models import Outcome
-from django.utils.timezone import now, timedelta, localdate
+from django.utils.timezone import now, timedelta
 # Create your views here.
 class OutcomeApiView(generics.GenericAPIView):
     serializer_class = OutcomeSerializer
@@ -23,10 +22,10 @@ class OutcomeApiView(generics.GenericAPIView):
 
 
     
-class OutcomeListApiView(generics.GenericAPIView):
+class   OutcomeListApiView(generics.GenericAPIView):
     serializer_class = OutcomeSerializer
 
-    def get(self, request):
+    def get(self):
         outcome = Outcome.objects.all()
         serializer = self.get_serializer(outcome, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -46,7 +45,7 @@ class OutcomeUpdateApiView(generics.GenericAPIView):
 class OutcomeDeleteApiView(generics.GenericAPIView):
     serializer_class = OutcomeSerializer
 
-    def delete(self, request, id):
+    def delete(self, id):
         outcome = Outcome.objects.get(id=id)
         outcome.delete()
         return Response({'message': 'Outcome deleted successfully!'}, status=status.HTTP_200_OK)
@@ -89,10 +88,32 @@ class MonthlyOutcomeApiView(generics.GenericAPIView):
         }, status=status.HTTP_200_OK) 
     
 
-class DailyOutcomeApiView(generics.GenericAPIView):   
-    serializer_class = OutcomeSerializer 
-    def get(self, request):
-        date = request.GET.get('date', localdate())
-        outcomes = Outcome.objects.filter(user=request.user, day__date=date)
+class DailyOutcomeApiView(generics.GenericAPIView):
+    serializer_class = OutcomeSerializer
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        today = now().date()
+        outcomes = Outcome.objects.filter(
+            user=user,
+            day__date=today
+        )
         total = outcomes.aggregate(total=models.Sum('amount'))['total']
-        return Response({'total': total or 0.00, 'outcomes': OutcomeSerializer(outcomes, many=True).data}, status=status.HTTP_200_OK)
+        return Response({
+            'daily_total': total or 0.00,
+            'outcomes': OutcomeSerializer(outcomes, many=True).data
+        }, status=status.HTTP_200_OK)
+    
+
+class SelectedDateApiView(generics.GenericAPIView):
+    serializer_class = OutcomeSerializer
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        day = Outcome.objects.filter(day=day, user=user)
+        total = day.aggregate(total=models.Sum('amount'))['total']
+        return Response({
+            'date_total': total or 0.00,
+            'outcomes' : OutcomeSerializer().data
+        }, status=status.HTTP_200_OK)
+

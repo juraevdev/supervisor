@@ -3,10 +3,10 @@ from outcome.models import Outcome
 
 class OutcomeSerializer(serializers.ModelSerializer):
     user = serializers.CharField()
-    day = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+    day = serializers.DateTimeField(format="%Y-%m-%d")
 
     class Meta:
         model = Outcome
-        fields = ['id', 'user', 'expense', 'amount', 'day']
+        fields = ['user', 'expense', 'amount', 'day']
 
     
