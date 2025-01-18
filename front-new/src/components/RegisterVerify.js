@@ -1,17 +1,21 @@
 import React, { useState } from "react";
 import { api } from "../api";
-import './registerverify.css'
+import "./registerverify.css";
+import { Link, useNavigate } from "react-router-dom";
 
 const RegisterVerify = () => {
   const [phone_number, setPhoneNumber] = useState("");
   const [code, setCode] = useState("");
   const [message, setMessage] = useState("");
 
+  const navigate = useNavigate(); // Hook yuqori darajada ishlatilishi kerak
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await api.post("api/v1/accounts/register/verify/", { phone_number, code });
       setMessage("Ro'yxatdan o'tish tasdiqlandi");
+      navigate("/"); 
     } catch (error) {
       setMessage("Tasdiqlash kodi noto'g'ri yoki eski.");
     }
@@ -35,7 +39,14 @@ const RegisterVerify = () => {
           onChange={(e) => setCode(e.target.value)}
           required
         />
-        <button type="submit">Verify</button>
+        <button type="submit" className="verify">
+          Tasdiqlash
+        </button>
+        <Link to="/resend">
+          <button type="button" className="resend">
+            Kodni qayta jo'natish
+          </button>
+        </Link>
       </form>
       {message && <p>{message}</p>}
     </div>

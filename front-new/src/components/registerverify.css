@@ -40,3 +40,31 @@
       height: 35px;
     }
   }
+
+  .verify {
+    width: 100%;
+    padding: 12px;
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s;
+    text-decoration: none;
+    margin-bottom: 10px;
+  }
+
+  .resend {
+    width: 100%;
+    padding: 12px;
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s;
+    text-decoration: none;
+    margin-bottom: 10px;
+  }

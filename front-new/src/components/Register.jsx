@@ -13,6 +13,7 @@ const schema = yup.object().shape({
     .required("Telefon raqam kiritish shart")
     .matches(/^\+998[0-9]{9}$/, "Telefon raqam formati +998() bo'lishi kerak"),
   first_name: yup.string().required("Ism kiritish shart"),
+  last_name: yup.string().required("Familiya kiritilishi kerak"),
   email: yup.string().email("Email noto'g'ri").required("Email kiritish shart"),
   password: yup
     .string()
@@ -50,15 +51,17 @@ const Register = () => {
     <div className="form-container">
       {/* Kirish sahifasiga link */}
       
-      <h2>Ro'yxatdan o'tish</h2>
       <form onSubmit={handleSubmit(onSubmit)}>
         {/* Telefon raqam */}
-        <input {...register("phone_number")} placeholder="Telefon raqam (+998XXXXXXXXX)" />
+        <input {...register("phone_number")} placeholder="Telefon raqam +998()" />
         <p>{errors.phone_number?.message}</p>
 
         {/* Ism */}
         <input {...register("first_name")} placeholder="Ism" />
         <p>{errors.first_name?.message}</p>
+
+        <input {...register("last_name")} placeholder="Familiya" />
+        <p>{errors.last_name?.message}</p>
 
         {/* Email */}
         <input {...register("email")} placeholder="Email" />

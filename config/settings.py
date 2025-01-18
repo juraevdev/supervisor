@@ -44,7 +44,7 @@ INSTALLED_APPS += [
     'corsheaders',
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'  

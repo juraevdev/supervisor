@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { api } from "../api";
+import { useNavigate } from "react-router-dom";
 
 
 const PasswordResetVerify = () => {
   const [code, setCode] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,6 +17,7 @@ const PasswordResetVerify = () => {
       });
       console.log(response, "response when success")
       setError("");
+      navigate("/reset")
     } catch (err) {
       setError("Verification code is invalid or expired");
       setMessage("");
@@ -32,7 +35,7 @@ const PasswordResetVerify = () => {
           onChange={(e) => setCode(e.target.value)}
           required
         />
-        <button type="submit">Verify</button>
+        <button type="submit" className="signupe">Verify</button>
       </form>
       {message && <p style={{ color: "green" }}>{message}</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}

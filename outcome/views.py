@@ -1,9 +1,10 @@
 from django.db import models
 from rest_framework import generics, status, permissions
-from outcome.serializers import OutcomeSerializer
+from outcome.serializers import OutcomeSerializer, OutcomeUpdateSerializer
 from rest_framework.response import Response
 from outcome.models import Outcome
-from django.utils.timezone import now, timedelta
+from django.utils.timezone import now, timedelta, make_aware, datetime
+from django.utils.dateparse import parse_date
 # Create your views here.
 class OutcomeApiView(generics.GenericAPIView):
     serializer_class = OutcomeSerializer
@@ -20,21 +21,25 @@ class OutcomeApiView(generics.GenericAPIView):
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
     
-class   OutcomeListApiView(generics.GenericAPIView):
+class OutcomeListApiView(generics.GenericAPIView):
     serializer_class = OutcomeSerializer
 
-    def get(self):
-        outcome = Outcome.objects.all()
-        serializer = self.get_serializer(outcome, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        outcomes = Outcome.objects.all()
+        total = outcomes.aggregate(total=models.Sum('amount'))['total']
+        return Response({
+            'total': total or 0.00,
+            'outcomes': OutcomeSerializer(outcomes, many=True).data
+        }, status=status.HTTP_200_OK)
 
 
 class OutcomeUpdateApiView(generics.GenericAPIView):
-    serializer_class = OutcomeSerializer
+    serializer_class = OutcomeUpdateSerializer
 
     def put(self, request, id):
+        user = request.user
         outcome = Outcome.objects.get(id=id)
         serializer = self.get_serializer(outcome, data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -45,10 +50,13 @@ class OutcomeUpdateApiView(generics.GenericAPIView):
 class OutcomeDeleteApiView(generics.GenericAPIView):
     serializer_class = OutcomeSerializer
 
-    def delete(self, id):
-        outcome = Outcome.objects.get(id=id)
-        outcome.delete()
-        return Response({'message': 'Outcome deleted successfully!'}, status=status.HTTP_200_OK)
+    def delete(self, request, id, *args, **kwargs):
+        try:
+            outcome = Outcome.objects.get(id=id)
+            outcome.delete()
+            return Response({'message': 'Outcome deleted successfully!'}, status=status.HTTP_200_OK)
+        except Outcome.DoesNotExist:
+            return Response({'error': 'Outcome not found!'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class WeeklyOutcomeApiView(generics.GenericAPIView):
@@ -100,20 +108,34 @@ class DailyOutcomeApiView(generics.GenericAPIView):
         )
         total = outcomes.aggregate(total=models.Sum('amount'))['total']
         return Response({
-            'daily_total': total or 0.00,
+            'total': total or 0.00,
             'outcomes': OutcomeSerializer(outcomes, many=True).data
         }, status=status.HTTP_200_OK)
-    
 
-class SelectedDateApiView(generics.GenericAPIView):
+class OutcomeListDateApiView(generics.GenericAPIView):
     serializer_class = OutcomeSerializer
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        day = Outcome.objects.filter(day=day, user=user)
-        total = day.aggregate(total=models.Sum('amount'))['total']
-        return Response({
-            'date_total': total or 0.00,
-            'outcomes' : OutcomeSerializer().data
-        }, status=status.HTTP_200_OK)
+        date = request.GET.get('date')
+        outcomes = Outcome.objects.all()
 
+        if date:
+            try:
+                parsed_date = parse_date(date)
+                if parsed_date:
+                    parsed_date = make_aware(datetime.combine(parsed_date, datetime.min.time()))
+                    start_of_day = parsed_date.replace(hour=0, minute=0, second=0, microsecond=0)
+                    end_of_day = parsed_date.replace(hour=23, minute=59, second=59, microsecond=999999)
+                    outcomes = outcomes.filter(day__range=[start_of_day, end_of_day])
+                else:
+                    return Response({'error': 'Invalid date format. Use YYYY-MM-DD format.'}, status=status.HTTP_400_BAD_REQUEST)
+            except ValueError:
+                return Response({'error': 'Invalid date format. Use YYYY-MM-DD format.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+        total = outcomes.aggregate(total=models.Sum('amount'))['total']
+        return Response({
+            'total': total or 0.00,
+            'outcomes': OutcomeSerializer(outcomes, many=True).data
+        }, status=status.HTTP_200_OK)

@@ -22,7 +22,7 @@ class RegisterSerializer(serializers.Serializer):
             phone_number = validated_data['phone_number'],
             first_name = validated_data['first_name'],
             email = validated_data['email'],
-            password = make_password(validated_data['password']),
+            password = validated_data['password'],
             is_active = False,
         )
         code = user.generate_verify_code()

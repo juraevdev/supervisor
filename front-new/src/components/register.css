@@ -140,3 +140,7 @@ input[name="phone_number"] {
     height: 35px;
   }
 }
+
+.request {
+  color: rgb(29, 125, 162);
+}

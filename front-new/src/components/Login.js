@@ -60,6 +60,7 @@ const Login = () => {
 
         <button type="submit" className="signupe">Login</button>
         {apiError && <p className="error">{apiError}</p>}
+        <a href="/request" className="request">Parol esdan chiqdimi?</a>
         <p className="sign">Akkountingiz yo'qmi?</p>
         <a href="sign-up" className="nav-linke">Ro'yxatdan o'tish</a>
       </form>

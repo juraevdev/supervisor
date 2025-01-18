@@ -5,6 +5,7 @@ from django.utils import timezone
 from rest_framework.views import APIView
 # from rest_framework_simplejwt.tokens import RefreshToken
 from .models import CustomUser, UserConfirmation
+import logging
 from accounts.serializers import ( 
     RegisterSerializer,
     RegisterVerifySerializer,
@@ -16,6 +17,9 @@ from accounts.serializers import (
     PasswordResetSerializer
 ) 
 # Create your views here.
+
+logger = logging.getLogger(__name__)
+
 class RegisterApiView(generics.GenericAPIView):
     serializer_class = RegisterSerializer
 
@@ -42,6 +46,11 @@ class RegisterVerifyApiView(generics.GenericAPIView):
                 return Response({'message': 'Code is invalid'}, status=status.HTTP_400_BAD_REQUEST)
             if otp_code.is_used != False or otp_code.expires < timezone.now():
                 return Response({'message': 'Code is expired or invalid'})
+            # refresh = RefreshToken.for_user(user)
+            # return Response({
+            #     "refresh": str(refresh),
+            #     "access": str(refresh.access_token)
+            # })
             otp_code.is_used = True
             user.is_active = True
             otp_code.save()
@@ -55,36 +64,93 @@ class ResendCodeApiView(generics.GenericAPIView):
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid()
-        phone_number = serializer.data['phone_number']
+        phone_number = serializer.validated_data['phone_number']
         user = CustomUser.objects.filter(phone_number=phone_number).first()
         if user is None:
-            return Response({'message': 'User not found'})
+            return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         code = user.generate_verify_code()
         return Response({'code':code})
     
+# class LoginApiView(generics.GenericAPIView):
+#     serializer_class = LoginSerializer
+
+#     def post(self, request):
+#         serializer = self.get_serializer(data=request.data)
+#         if serializer.is_valid():
+#             phone_number = serializer.validated_data['phone_number']
+#             password = serializer.validated_data['password']
+
+#             user = CustomUser.objects.filter(phone_number=phone_number, is_active=True).first()
+#             if user is None:
+#                 return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            
+#             if user is None or not user.check_password(password):
+#                 logger.warning(f"Login failed for phone number: {phone_number}")
+#             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+            
+#             refresh = RefreshToken.for_user(user)
+#             return Response({
+#                 "refresh": str(refresh),
+#                 "access": str(refresh.access_token)
+#             })
+
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# class LoginApiView(generics.GenericAPIView):
+#     serializer_class = LoginSerializer
+
+#     def post(self, request):
+#         serializer = self.get_serializer(data=request.data)
+#         if serializer.is_valid():
+#             phone_number = serializer.validated_data['phone_number']
+#             password = serializer.validated_data['password']
+
+#             user = CustomUser.objects.filter(phone_number=phone_number, is_active=True).first()
+#             if user is None or not user.check_password(password):
+#                 logger.warning(f"Login failed for phone number: {phone_number}")
+#                 return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+#             refresh = RefreshToken.for_user(user)
+#             return Response({
+#                 "refresh": str(refresh),
+#                 "access": str(refresh.access_token)
+#             })
+
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class LoginApiView(generics.GenericAPIView):
     serializer_class = LoginSerializer
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            phone_number = serializer.validated_data['phone_number']
+            phone_number = serializer.validated_data['phone_number'].strip().replace(" ", "")
             password = serializer.validated_data['password']
 
-            user = CustomUser.objects.filter(phone_number=phone_number, is_active=True).first()
+            user = CustomUser.objects.filter(phone_number=phone_number).first()
             if user is None:
-                return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-            
-            if not user.check_password(password):
+                logger.warning(f"Login failed: User not found for phone number {phone_number}")
                 return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-            
+
+            if not user.is_active:
+                logger.warning(f"Login failed: Inactive user {phone_number}")
+                return Response({'error': 'User account is inactive.'}, status=status.HTTP_403_FORBIDDEN)
+
+            if not user.check_password(password):
+                logger.warning(f"Login failed: Incorrect password for phone number {phone_number}")
+                return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+            logger.info(f"Login successful for phone number {phone_number}")
             refresh = RefreshToken.for_user(user)
             return Response({
                 "refresh": str(refresh),
                 "access": str(refresh.access_token)
             })
 
+        logger.warning("Invalid data provided to serializer")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 class LogoutApiView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -126,6 +192,7 @@ class PasswordResetVerifyApiView(generics.GenericAPIView):
                 return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
             if otp_code is None or otp_code.expires < timezone.now():
                 return Response({'message': 'Incorrect verification code'}, status=status.HTTP_400_BAD_REQUEST)
+            otp_code.is_used = True
             otp_code.save()
             return Response({'message': 'Verification code is correct. Now you can change your password'}, status=status.HTTP_200_OK)
         return Response(serializer.errors)
@@ -145,6 +212,8 @@ class PasswordResetApiView(generics.GenericAPIView):
                 return Response({'message': 'User not found'})
             if otp_code is None:
                 return Response({'message': 'Verification code not confirmed'}, status=status.HTTP_400_BAD_REQUEST)
+            if not otp_code.is_used:
+                return Response({'message': 'Bu raqamda hali kod tasdiqlanmagan'}, status=status.HTTP_401_UNAUTHORIZED)
             user.set_password(confirm_password)
             user.save()
             return Response({'message': 'Your password changed successfully'})
@@ -158,5 +227,6 @@ class UserProfileApiView(APIView):
         return Response({
             "first_name": user.first_name,
             "last_name": user.last_name,
+            "email": user.email,
             "phone_number": user.phone_number,
         })

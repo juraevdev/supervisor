@@ -1,38 +1,70 @@
 import React, { useState } from "react";
 import { api } from "../api";
+import { useNavigate } from "react-router-dom";
+import * as yup from "yup";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+const schema = yup.object().shape({
+  phone_number: yup
+    .string()
+    .required("Telefon raqam kiritish shart")
+    .matches(/^\+998[0-9]{9}$/, "Telefon raqam formati +998XXXXXXXXX bo'lishi kerak"),
+});
 
 const ResendCode = () => {
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const navigate = useNavigate();
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleResendCode = async (e) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const handleResendCode = async (data) => {
+    setLoading(true);
+    setMessage("");
+    setError("");
     try {
-      const response = await api.post("api/v1/accounts/register/resend/code/", { phone_number: phoneNumber });
-      setError("");
-      console.log(response, "response when success")
+      const response = await api.post("api/v1/accounts/register/resend/code/", {
+        phone_number: data.phone_number,
+      });
+
+      setMessage(response.data.message);
+      navigate("/register/verify"); // Sahifaga yo'naltirish
     } catch (err) {
-      setError("Failed to resend verification code. Please try again.");
-      setMessage("");
+      if (err.response && err.response.status === 404) {
+        setError("Foydalanuvchi topilmadi.");
+      } else {
+        setError("Tasdiqlash kodini yuborishda xatolik yuz berdi.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div>
-      <h2>Resend Verification Code</h2>
-      <form onSubmit={handleResendCode}>
-        <input
-          type="text"
-          placeholder="Enter your phone number"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
-          required
-        />
-        <button type="submit">Resend Code</button>
+      <form onSubmit={handleSubmit(handleResendCode)}>
+        <div>
+          <input
+            type="text"
+            placeholder="Telefon raqamni kiriting"
+            {...register("phone_number")}
+          />
+          {errors.phone_number && <p style={{ color: "red" }}>{errors.phone_number.message}</p>}
+        </div>
+        <button type="submit" className="resend" disabled={loading}>
+          {loading ? "Yuklanmoqda..." : "Tasdiqlash kodini yuborish"}
+        </button>
       </form>
-      {message && <p style={{ color: "green" }}>{message}</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {message && <div style={{ color: "green", marginTop: "10px" }}>{message}</div>}
+      {error && <div style={{ color: "red", marginTop: "10px" }}>{error}</div>}
     </div>
   );
 };

@@ -7,6 +7,13 @@ class OutcomeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Outcome
-        fields = ['user', 'expense', 'amount', 'day']
+        fields = ['id', 'user', 'expense', 'amount', 'day']
+
+
+class OutcomeUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Outcome
+        fields = ['id', 'expense', 'amount']
 
     
