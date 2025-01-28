@@ -1,8 +1,64 @@
 import React, { useEffect, useState } from "react";
 import { fetchAllTodos } from "../utils/api";
+import { Dialog, DialogTitle, DialogContent, TextField, Button } from "@mui/material";
+import { API_BASE_URL } from '../services/api';
+import axios from "axios";
 
 function TodoList() {
   const [todos, setTodos] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [plannedTime, setPlannedTime] = useState("");
+  const [user, setUser] = useState('');
+
+  useEffect(() => {
+    const token = localStorage.getItem("access");
+    axios.get(API_BASE_URL + '/api/v1/accounts/profile/', {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    })
+        .then(response => {
+            console.log(response, "me data");
+            setUser(response?.data?.first_name || 'User');
+        })
+        .catch(error => {
+            console.log(error);
+        });
+}, []);
+
+const addFunc = () => {
+  if (!name || !plannedTime) {
+      alert("Please fill in all fields.");
+      return;
+  }
+
+  const today = new Date();
+  const formattedDate = today.toISOString();
+
+  const data = {
+    user: user,
+    day: formattedDate,
+    name: name,
+    plannedTime: plannedTime
+};
+
+  const token = localStorage.getItem("access");
+
+  axios.post(`${API_BASE_URL}/api/v1/todos/create/`, data, {
+      headers: {
+          Authorization: `Bearer ${token}`,
+      },
+  })
+      .then(response => {
+          console.log(response, "response from post request");
+          setName('');
+          setPlannedTime('');
+      })
+      .catch(error => {
+          console.log(error);
+      });
+}
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -48,6 +104,37 @@ function TodoList() {
               </button>
             </div>
           ))}
+          <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
+        Add Todo
+      </Button>
+      <Dialog open={open} onClose={() => setOpen(false)}>
+        <DialogTitle>Add a New Todo</DialogTitle>
+        <DialogContent>
+          <TextField
+            fullWidth
+            label="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            margin="dense"
+          />
+          <TextField
+            fullWidth
+            label="Planned Time"
+            type="time"
+            value={plannedTime}
+            onChange={(e) => setPlannedTime(e.target.value)}
+            margin="dense"
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={addFunc}
+            style={{ marginTop: "10px" }}
+          >
+            Add
+          </Button>
+        </DialogContent>
+      </Dialog>
         </div>
       )}
     </div>

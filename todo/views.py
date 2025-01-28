@@ -1,15 +1,15 @@
 from .models import Todo
-from .serializers import TodoSerializer
+from .serializers import TodoSerializer, TodoCreateSerializer
 from rest_framework import generics, status
 from rest_framework.response import Response
 # Create your views here.
 class TodoCreateApiView(generics.GenericAPIView):
-    serializer_class = TodoSerializer
-
+    serializer_class = TodoCreateSerializer
     def post(self, request):
+        user = request.user
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
+            serializer.save(author=user)
             return Response({'message': 'Todo created successfully!'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     

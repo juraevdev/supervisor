@@ -81,7 +81,7 @@ const Register = () => {
 
         {/* Tugma */}
         <button type="submit" className="signupe">Ro'yxatdan o'tish</button>
-        <a href="sign-in" className="nav-link">Kirish</a>
+        <a href="sign-in" className="nav-linke">Kirish</a>
       </form>
     </div>
   );

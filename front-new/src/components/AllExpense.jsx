@@ -23,6 +23,7 @@ const Expense = () => {
     setOpenDialog(false);
     setEditedOutcome({ expense: "", amount: "" });
     setEditingId(null);
+    handleCloseMenu(true);
   };
 
   const handleMenuClick = (id, event) => {
