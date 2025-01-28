@@ -88,7 +88,7 @@ const Expense = () => {
 
   const handleSubmit = async () => {
     if (selectedDate) {
-      const formattedDate = selectedDate.toISOString().split("T")[0];
+      const formattedDate = selectedDate.toLocaleDateString("en-CA");
       try {
         const response = await axios.get(`${API_BASE_URL}/api/v1/expenses/outcome/list/`, {
           params: { date: formattedDate },
@@ -133,7 +133,7 @@ const Expense = () => {
       <div className="max-w-4xl mx-auto py-8 px-8 bg-white shadow-lg rounded-lg" style={{ marginTop: "20px" }}>
         <h1 className="text-3xl font-bold text-center mb-6 text-blue-600">Today's Expenses</h1>
         <div className="text-lg font-semibold mb-6 text-center text-gray-800">
-          Total for today: <span className="text-green-500">{todayTotal} so'm</span>
+          Total for today: <span className="text-green-500">{todayTotal.toLocaleString("uz-UZ", { style: "currency", currency: "UZS" })}</span>
         </div>
         <div className="space-y-6">
           {outcomes.map((outcome) => (
@@ -190,7 +190,7 @@ const Expense = () => {
             See All
           </button>
         </Link>
-        <Link to="/add-expense">
+        <Link to="/home/add-expense">
           <button className="px-6 py-3 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition">
             Add
           </button>
@@ -248,7 +248,7 @@ const Expense = () => {
                   <label>Total</label>
                   <input
                     type="text"
-                    value={dateTotal}
+                    value={dateTotal.toLocaleString("uz-UZ", { style: "currency", currency: "UZS" })}
                     readOnly
                     style={{ width: "100%" }}
                   />
@@ -264,11 +264,11 @@ const Expense = () => {
           <div className="space-y-4">
             <div className="flex justify-between items-center bg-gray-100 p-4 rounded-lg">
               <span className="font-medium">This week</span>
-              <span className="font-bold text-gray-700">{weeklyTotal} so'm</span>
+              <span className="font-bold text-gray-700">{weeklyTotal.toLocaleString("uz-UZ", { style: "currency", currency: "UZS" })}</span>
             </div>
             <div className="flex justify-between items-center bg-gray-100 p-4 rounded-lg">
               <span className="font-medium">This month</span>
-              <span className="font-bold text-gray-700">{monthlyTotal} so'm</span>
+              <span className="font-bold text-gray-700">{monthlyTotal.toLocaleString("uz-UZ", { style: "currency", currency: "UZS" })}</span>
             </div>
           </div>
         </div>

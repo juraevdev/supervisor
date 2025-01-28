@@ -47,7 +47,7 @@ INSTALLED_APPS += [
 CORS_ALLOW_ALL_ORIGINS = True
 
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0'  
+CELERY_BROKER_URL = 'redis://localhost:6380/0'  
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 
@@ -55,7 +55,7 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_BEAT_SCHEDULE = {
     'deactivate-expired-todos': {
         'task': 'todo.tasks.deactivate_expired_todos',
-        'schedule': 60.0,  
+        'schedule': timedelta(minutes=1),  
     },
 }
 
@@ -63,7 +63,7 @@ CELERY_BEAT_SCHEDULE = {
 CELERY_BEAT_SCHEDULE.update({
     'activate-todos-at-planned-time': {
         'task': 'todo.tasks.activate_todos_at_planned_time',
-        'schedule': 60.0,  
+        'schedule': timedelta(minutes=1), 
     },
 })
 

@@ -6,3 +6,8 @@ class TodoSerializer(serializers.ModelSerializer):
         model = Todo
         fields = ['name', 'planned_time', 'author']
 
+class TodoCreateSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = Todo
+        fields = ['name', 'planned_time']
+

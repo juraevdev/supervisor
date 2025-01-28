@@ -120,6 +120,10 @@ body {
   .features {
     margin: 2rem 0;
   }
+
+  .features h2 {
+    margin-left: 1.5rem;
+  }
   
   .feature-cards {
     display: flex;
@@ -129,7 +133,7 @@ body {
   
   .card {
     background-color: white;
-    padding: 1rem;
+    padding: 2rem;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 28%;

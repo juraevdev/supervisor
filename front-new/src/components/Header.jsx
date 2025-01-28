@@ -3,11 +3,14 @@ import "./Home.css";
 import { useEffect, useState } from "react";
 import { fetchUserProfile } from "../utils/api";
 import { FaUserCircle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 function Header() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState("");
   const [showPopup, setShowPopup] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("access");
@@ -31,6 +34,7 @@ function Header() {
     localStorage.removeItem("refresh");
     localStorage.removeItem("username");
     setIsAuthenticated(false);
+    navigate("/sign-in"); // Sign-in sahifasiga qayta yo'naltirish
   };
 
   const togglePopup = () => {
@@ -41,7 +45,7 @@ function Header() {
     <header className="header">
       <div className="logo">Task & Spend</div>
       <nav className="nav">
-        <Link to="/expense">Expenses</Link>
+        <Link to="/home/expense">Expenses</Link>
         <Link to="/todos">Tasks</Link>
         {!isAuthenticated ? (
           <Link to="/sign-in" className="sign-in">Sign in</Link>

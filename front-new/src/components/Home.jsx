@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./Home.css";
 
 function Home() {
- 
+
 
 
 
@@ -10,7 +10,7 @@ function Home() {
   return (
     <div className="app-container">
       {/* Header */}
-     
+
 
       {/* Hero Section */}
       <section className="hero">
@@ -22,26 +22,38 @@ function Home() {
           {/* <img src="" alt="Mobile App Preview" /> */}
         </div>
       </section>
+      <div className="py-20 bg-white text-black text-center">
+              <h2 className="text-4xl font-bold mb-8">Features of Task & Spend</h2>
+              <div className="flex flex-wrap justify-center gap-8">
+                <FeatureCard
+                  title="Track Expenses"
+                  image=""
+                  description="Analyze your daily, weekly, and monthly spending."
+                />
+                <FeatureCard
+                  title="Organize Tasks"
+                  image=""
+                  description="Plan and prioritize your daily tasks with ease."
+                />
+                <FeatureCard
+                  title="Financial Insights"
+                  image=""
+                  description="Get clear insights into your financial activities."
+                />
+              </div>
+            </div>
+          </div>
+        );
+      };
+      
 
-      <section className="features">
-        <h2>Features of Task & Spend</h2>
-        <div className="feature-cards">
-          <div className="card">
-            <h3>To-do List</h3>
-            <p>Add tasks and manage your day</p>
+      const FeatureCard = ({ title, image, description }) => {
+        return (
+          <div className="max-w-xs bg-gray-100 rounded-lg shadow-md p-6 text-center hover:shadow-lg transition transform hover:scale-105">
+            <h3 className="text-xl font-bold mb-2">{title}</h3>
+            <p className="text-black">{description}</p>
           </div>
-          <div className="card">
-            <h3>Expense Tracker</h3>
-            <p>Track your spending and categorize transactions</p>
-          </div>
-          <div className="card">
-            <h3>Calendar</h3>
-            <p>View your tasks and expenses on a calendar</p>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-}
+        );
+      };
 
 export default Home;
