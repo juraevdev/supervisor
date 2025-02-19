@@ -12,9 +12,8 @@ import AddExpense from './components/AddExpense';
 import Layout from './components/Layout';
 import ProfileDetails from './components/UserProfile';
 import Outcomes from './components/AllExpense';
-import TodoList from './components/TodoList';
-import AddTodo from './components/AddTodo';
 import ExpenseIntro from './components/Intro';
+import Todo from './components/App';
 
 function App() {
   return (
@@ -40,8 +39,7 @@ function App() {
         {/* Profile and Other Features */}
         <Route path="/profile" element={<ProfileDetails />} />
         <Route path="/expenses" element={<Outcomes />} />
-        <Route path="/todos" element={<TodoList />} />
-        <Route path="/add-todo" element={<AddTodo />} />
+        <Route path='/todo' element={<Todo/>}/>
       </Routes>
     </BrowserRouter>
   );

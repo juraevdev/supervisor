@@ -165,6 +165,7 @@ class LogoutApiView(generics.GenericAPIView):
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
+
 class PasswordResetRequestApiView(generics.GenericAPIView):
     serializer_class = PasswordResetRequestSerializer
 
@@ -178,6 +179,7 @@ class PasswordResetRequestApiView(generics.GenericAPIView):
             code = user.generate_verify_code()
             return Response({'message': 'Code is sent to your phone number', 'code':code})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
     
 class PasswordResetVerifyApiView(generics.GenericAPIView):
     serializer_class = PasswordResetVerifySerializer
