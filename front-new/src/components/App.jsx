@@ -68,7 +68,7 @@ function App() {
           {todos.map(todo => (
             <div
             key={todo.id}
-            className="bg-white p-4 rounded-lg shadow-sm flex items-center gap-3 hover:shadow-md transition-shadow w-full"
+            className="bg-white p-4 rounded-lg shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow w-full"
           >
             {editingId === todo.id ? (
               <>
@@ -93,12 +93,14 @@ function App() {
               </>
             ) : (
               <>
+              <div className='flex items-center gap-3'>
                 <input
                   type="checkbox"
                   checked={todo.completed}
                   onChange={() => toggleTodo(todo.id)}
                   className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500 flex-shrink-0"
                 />
+                </div>
                 
                 <span className={`flex-1 ${todo.completed ? 'line-through text-gray-500' : 'text-gray-800'}`}>
                   {todo.text}

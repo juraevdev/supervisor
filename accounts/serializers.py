@@ -10,7 +10,7 @@ class RegisterSerializer(serializers.Serializer):
     password = serializers.CharField()
     confirm_password = serializers.CharField()
 
-    def validate(self, data):
+    def validate(self, data):   
         password = data.get('password')
         confirm_password = data.get('confirm_password')
         if password != confirm_password:

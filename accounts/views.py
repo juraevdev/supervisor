@@ -71,52 +71,6 @@ class ResendCodeApiView(generics.GenericAPIView):
         code = user.generate_verify_code()
         return Response({'code':code})
     
-# class LoginApiView(generics.GenericAPIView):
-#     serializer_class = LoginSerializer
-
-#     def post(self, request):
-#         serializer = self.get_serializer(data=request.data)
-#         if serializer.is_valid():
-#             phone_number = serializer.validated_data['phone_number']
-#             password = serializer.validated_data['password']
-
-#             user = CustomUser.objects.filter(phone_number=phone_number, is_active=True).first()
-#             if user is None:
-#                 return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-            
-#             if user is None or not user.check_password(password):
-#                 logger.warning(f"Login failed for phone number: {phone_number}")
-#             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-            
-#             refresh = RefreshToken.for_user(user)
-#             return Response({
-#                 "refresh": str(refresh),
-#                 "access": str(refresh.access_token)
-#             })
-
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# class LoginApiView(generics.GenericAPIView):
-#     serializer_class = LoginSerializer
-
-#     def post(self, request):
-#         serializer = self.get_serializer(data=request.data)
-#         if serializer.is_valid():
-#             phone_number = serializer.validated_data['phone_number']
-#             password = serializer.validated_data['password']
-
-#             user = CustomUser.objects.filter(phone_number=phone_number, is_active=True).first()
-#             if user is None or not user.check_password(password):
-#                 logger.warning(f"Login failed for phone number: {phone_number}")
-#                 return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-
-#             refresh = RefreshToken.for_user(user)
-#             return Response({
-#                 "refresh": str(refresh),
-#                 "access": str(refresh.access_token)
-#             })
-
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginApiView(generics.GenericAPIView):
     serializer_class = LoginSerializer
