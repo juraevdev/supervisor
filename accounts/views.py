@@ -3,7 +3,6 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils import timezone
 from rest_framework.views import APIView
-# from rest_framework_simplejwt.tokens import RefreshToken
 from .models import CustomUser, UserConfirmation
 import logging
 from accounts.serializers import ( 
@@ -16,7 +15,7 @@ from accounts.serializers import (
     PasswordResetVerifySerializer,
     PasswordResetSerializer
 ) 
-# Create your views here.
+
 
 logger = logging.getLogger(__name__)
 
@@ -30,33 +29,26 @@ class RegisterApiView(generics.GenericAPIView):
             return Response(result, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class RegisterVerifyApiView(generics.GenericAPIView):
-    serializer_class = RegisterVerifySerializer
 
-    def post(self, request):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            phone_number = serializer.data['phone_number']
-            code = serializer.data['code']
-            user = CustomUser.objects.filter(phone_number=phone_number, is_active=False).first()
-            otp_code = UserConfirmation.objects.filter(code=code).first()
-            if user is None:
-                return Response({'message': 'User not found'}, status=status.HTTP_400_BAD_REQUEST)
-            if otp_code is None:
-                return Response({'message': 'Code is invalid'}, status=status.HTTP_400_BAD_REQUEST)
-            if otp_code.is_used != False or otp_code.expires < timezone.now():
-                return Response({'message': 'Code is expired or invalid'})
-            # refresh = RefreshToken.for_user(user)
-            # return Response({
-            #     "refresh": str(refresh),
-            #     "access": str(refresh.access_token)
-            # })
-            otp_code.is_used = True
-            user.is_active = True
-            otp_code.save()
-            user.save()
-            return Response({'message': 'User verified'}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class RegisterVerifyApiView(APIView):
+    def post(self, request, *args, **kwargs):
+        phone_number = request.data.get('phone_number')
+        code = request.data.get('code')
+
+        try:
+            user = CustomUser.objects.get(phone_number=phone_number)
+            confirmation = UserConfirmation.objects.filter(user=user, code=code, is_used=False).first()
+
+            if confirmation and confirmation.expires > timezone.now():
+                user.is_active = True
+                user.save()
+                confirmation.is_used = True
+                confirmation.save()
+                return Response({'message': 'Account verified successfully!'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'Invalid or expired code'}, status=status.HTTP_400_BAD_REQUEST)
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
 class ResendCodeApiView(generics.GenericAPIView):
     serializer_class = ResendCodeSerializer

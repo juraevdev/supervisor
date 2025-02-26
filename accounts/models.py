@@ -1,6 +1,7 @@
 import random, datetime
 from django.db import models
 from django.utils import timezone
+from django.core.mail import send_mail
 from django.contrib.auth.models import AbstractUser
 from accounts.managers import CustomUserManager
 
@@ -23,6 +24,15 @@ class CustomUser(AbstractUser):
             code = code,
             expires = timezone.now() + datetime.timedelta(minutes=2)
         )
+        
+        send_mail(
+            'Email verification code',
+            f'Your verification code is: {code}',
+            'no-reply@example.com',
+            [self.email],
+            fail_silently=False,
+        )
+
         return code
 
 class UserConfirmation(models.Model):

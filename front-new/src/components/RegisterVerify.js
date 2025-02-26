@@ -4,16 +4,16 @@ import "./registerverify.css";
 import { Link, useNavigate } from "react-router-dom";
 
 const RegisterVerify = () => {
-  const [phone_number, setPhoneNumber] = useState("");
+  const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [message, setMessage] = useState("");
 
-  const navigate = useNavigate(); // Hook yuqori darajada ishlatilishi kerak
+  const navigate = useNavigate(); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post("api/v1/accounts/register/verify/", { phone_number, code });
+      await api.post("api/v1/accounts/register/verify/", { email, code });
       setMessage("Ro'yxatdan o'tish tasdiqlandi");
       navigate("/"); 
     } catch (error) {
@@ -26,11 +26,10 @@ const RegisterVerify = () => {
       <h2>Register Verification</h2>
       <form onSubmit={handleSubmit}>
         <input
-          type="text"
-          name="phone_number"
-          placeholder="Telefon raqamingiz"
-          value={phone_number}
-          onChange={(e) => setPhoneNumber(e.target.value)}
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
         <input
           type="text"

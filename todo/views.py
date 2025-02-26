@@ -2,9 +2,11 @@ from .models import Todo
 from .serializers import TodoSerializer, TodoCreateSerializer
 from rest_framework import generics, status
 from rest_framework.response import Response
-# Create your views here.
+from django.shortcuts import get_object_or_404
+
 class TodoCreateApiView(generics.GenericAPIView):
     serializer_class = TodoCreateSerializer
+
     def post(self, request):
         user = request.user
         serializer = self.get_serializer(data=request.data)
@@ -17,15 +19,17 @@ class TodoListApiView(generics.GenericAPIView):
     serializer_class = TodoSerializer
 
     def get(self, request):
-        todo = Todo.objects.all()
-        serializer = self.get_serializer(todo, many=True)
+        user = request.user
+        todos = Todo.objects.filter(author=user)
+        serializer = self.get_serializer(todos, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 class TodoDetailApiView(generics.GenericAPIView):
     serializer_class = TodoSerializer
 
-    def get(self, requst, id):
-        todo = Todo.objects.get(id=id)
+    def get(self, request, id):
+        user = request.user
+        todo = get_object_or_404(Todo, id=id, author=user)
         serializer = self.get_serializer(todo)
         return Response(serializer.data)
     
@@ -33,8 +37,9 @@ class TodoUpdateApiView(generics.GenericAPIView):
     serializer_class = TodoSerializer
 
     def put(self, request, id):
-        todo = Todo.objects.get(id=id)
-        serializer = self.get_serializer(todo, data=request.data)
+        user = request.user
+        todo = get_object_or_404(Todo, id=id, author=user)
+        serializer = self.get_serializer(todo, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response({'message': 'Todo edited successfully!'}, status=status.HTTP_200_OK)
@@ -44,7 +49,7 @@ class TodoDeleteApiView(generics.GenericAPIView):
     serializer_class = TodoSerializer
 
     def delete(self, request, id):
-        todo = Todo.objects.get(id=id)
+        user = request.user
+        todo = get_object_or_404(Todo, id=id, author=user)
         todo.delete()
         return Response({'message': 'Todo deleted'}, status=status.HTTP_200_OK)
-    

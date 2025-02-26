@@ -6,10 +6,10 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 const schema = yup.object().shape({
-  phone_number: yup
+  email: yup
     .string()
-    .required("Telefon raqam kiritish shart")
-    .matches(/^\+998[0-9]{9}$/, "Telefon raqam formati +998 () bo'lishi kerak"),
+    .required("Email kiritish shart")
+    .email("Email noto'g'ri formatda"),
 });
 
 const PasswordResetRequest = () => {
@@ -27,10 +27,10 @@ const PasswordResetRequest = () => {
   const handleResetRequest = async (data) => {
     try {
       const response = await api.post("api/v1/accounts/password/request/", {
-        phone_number: data.phone_number,
+        email: data.email,
       });
 
-      alert("Raqamingizga tasdiqlash kodi yuborildi!");
+      alert("Emailingizga tasdiqlash kodi yuborildi!");
       navigate("/verify");
     } catch (err) {
       if (err.response && err.response.status === 404) {
@@ -47,12 +47,12 @@ const PasswordResetRequest = () => {
       <form onSubmit={handleSubmit(handleResetRequest)}>
         <div>
           <input
-            type="text"
-            placeholder="Telefon raqamingiz"
-            {...register("phone_number")}
+            type="email"
+            placeholder="Email"
+            {...register("email")}
           />
-          {errors.phone_number && (
-            <p style={{ color: "red" }}>{errors.phone_number.message}</p>
+          {errors.email && (
+            <p style={{ color: "red" }}>{errors.email.message}</p>
           )}
         </div>
         <button type="submit" className="signupe">Kod olish</button>
