@@ -20,6 +20,7 @@ function AddTodo({ onAdd }) {
       .catch((error) => console.error("Error adding todo:", error));
   };
 
+  
   return (
     <>
       <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
@@ -56,5 +57,6 @@ function AddTodo({ onAdd }) {
     </>
   );
 }
+
 
 export default AddTodo;
