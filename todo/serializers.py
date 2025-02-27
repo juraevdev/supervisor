@@ -4,7 +4,7 @@ from rest_framework import serializers
 class TodoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
-        fields = ['name', 'author']
+        fields = ['id', 'name', 'author']
 
     def create(self, validated_data):
         request = self.context.get('request')
@@ -14,5 +14,5 @@ class TodoSerializer(serializers.ModelSerializer):
 class TodoCreateSerializer(serializers.ModelSerializer):
     class Meta: 
         model = Todo
-        fields = ['name', ]
+        fields = ['name']
 

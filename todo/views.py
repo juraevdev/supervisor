@@ -3,6 +3,7 @@ from .serializers import TodoSerializer, TodoCreateSerializer
 from rest_framework import generics, status
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 
 class TodoCreateApiView(generics.GenericAPIView):
     serializer_class = TodoCreateSerializer
@@ -17,6 +18,7 @@ class TodoCreateApiView(generics.GenericAPIView):
     
 class TodoListApiView(generics.GenericAPIView):
     serializer_class = TodoSerializer
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
