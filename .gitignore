@@ -3,3 +3,8 @@ node_modules
 venv
 db.sqlite
 .venv
+__pycache__
+migrations
+celerybeat-schedule.bak
+celerybeat-schedule.dat
+celerybeat-schedule.dir
