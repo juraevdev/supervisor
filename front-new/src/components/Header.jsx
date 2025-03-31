@@ -46,7 +46,7 @@ function Header() {
       <div className="logo">Task & Spend</div>
       <nav className="nav">
         <Link to="/home/expense">Expenses</Link>
-        <Link to="/todos">Tasks</Link>
+        <Link to="/todo">Tasks</Link>
         {!isAuthenticated ? (
           <Link to="/sign-in" className="sign-in">Sign in</Link>
         ) : (

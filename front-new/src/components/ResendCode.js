@@ -6,10 +6,10 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 const schema = yup.object().shape({
-  phone_number: yup
+  email: yup
     .string()
-    .required("Telefon raqam kiritish shart")
-    .matches(/^\+998[0-9]{9}$/, "Telefon raqam formati +998XXXXXXXXX bo'lishi kerak"),
+    .required("Email kiritish shart")
+    .email("Yaroqli email kiriting"),
 });
 
 const ResendCode = () => {
@@ -32,11 +32,11 @@ const ResendCode = () => {
     setError("");
     try {
       const response = await api.post("api/v1/accounts/register/resend/code/", {
-        phone_number: data.phone_number,
+        email: data.email,
       });
 
       setMessage(response.data.message);
-      navigate("/register/verify"); // Sahifaga yo'naltirish
+      navigate("/register/verify");
     } catch (err) {
       if (err.response && err.response.status === 404) {
         setError("Foydalanuvchi topilmadi.");
@@ -53,11 +53,11 @@ const ResendCode = () => {
       <form onSubmit={handleSubmit(handleResendCode)}>
         <div>
           <input
-            type="text"
-            placeholder="Telefon raqamni kiriting"
-            {...register("phone_number")}
+            type="email"
+            placeholder="Emailingizni kiriting"
+            {...register("email")}
           />
-          {errors.phone_number && <p style={{ color: "red" }}>{errors.phone_number.message}</p>}
+          {errors.email && <p style={{ color: "red" }}>{errors.email.message}</p>}
         </div>
         <button type="submit" className="resend" disabled={loading}>
           {loading ? "Yuklanmoqda..." : "Tasdiqlash kodini yuborish"}

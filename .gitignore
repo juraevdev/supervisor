@@ -1,4 +1,11 @@
 node_modules
+<<<<<<< HEAD
 
 
 db.sqlite3
+=======
+.env
+venv
+db.sqlite
+.venv
+>>>>>>> d1bf1d93ddb119e0c64270a16040797bab1b6704

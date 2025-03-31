@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from accounts.models import CustomUser
 from django.contrib.auth.hashers import make_password
-from rest_framework.response import Response
 
 class RegisterSerializer(serializers.Serializer):
     phone_number = serializers.CharField()
@@ -10,12 +9,23 @@ class RegisterSerializer(serializers.Serializer):
     password = serializers.CharField()
     confirm_password = serializers.CharField()
 
-    def validate(self, data):
+    def validate(self, data):   
         password = data.get('password')
         confirm_password = data.get('confirm_password')
         if password != confirm_password:
             raise serializers.ValidationError("Password didn't match")
-        return data
+        email = data.get('email')
+        user = CustomUser.objects.filter(email=email).first()
+        code = user.generate_verify_code()
+        return {
+            'message': 'Confirmation code is sent to your email',
+            'code': code
+        }
+
+    
+class RegisterVerifySerializer(serializers.Serializer):
+    email = serializers.CharField()
+    code = serializers.CharField()
 
     def create(self, validated_data):
         user = CustomUser.objects.create_user(
@@ -25,18 +35,10 @@ class RegisterSerializer(serializers.Serializer):
             password = validated_data['password'],
             is_active = False,
         )
-        code = user.generate_verify_code()
-        return {
-            'message': 'Confirmation code is sent to your phone number',
-            'code': code
-        }
-    
-class RegisterVerifySerializer(serializers.Serializer):
-    phone_number = serializers.CharField()
-    code = serializers.CharField()
+        return user
 
 class ResendCodeSerializer(serializers.Serializer):
-    phone_number = serializers.CharField()
+    email = serializers.CharField()
 
 class LoginSerializer(serializers.Serializer):
     phone_number = serializers.CharField()
@@ -46,13 +48,13 @@ class LogoutSerializer(serializers.Serializer):
     refresh = serializers.CharField()
 
 class PasswordResetRequestSerializer(serializers.Serializer):
-    phone_number = serializers.CharField()
+    email = serializers.CharField()
 
 class PasswordResetVerifySerializer(serializers.Serializer):
     code = serializers.CharField()
 
 class PasswordResetSerializer(serializers.Serializer):
-    phone_number = serializers.CharField()
+    email = serializers.CharField()
     new_password = serializers.CharField()
     confirm_password = serializers.CharField()
 
