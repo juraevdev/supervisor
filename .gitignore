@@ -8,4 +8,12 @@ db.sqlite3
 venv
 db.sqlite
 .venv
+<<<<<<< HEAD
 >>>>>>> d1bf1d93ddb119e0c64270a16040797bab1b6704
+=======
+__pycache__
+migrations
+celerybeat-schedule.bak
+celerybeat-schedule.dat
+celerybeat-schedule.dir
+>>>>>>> 3fc31829ca28c413fd5ca564583d66b8fd4c60f3

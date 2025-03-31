@@ -2,6 +2,8 @@ from rest_framework import serializers
 from accounts.models import CustomUser
 from django.contrib.auth.hashers import make_password
 
+
+
 class RegisterSerializer(serializers.Serializer):
     phone_number = serializers.CharField()
     first_name = serializers.CharField()
@@ -14,18 +16,7 @@ class RegisterSerializer(serializers.Serializer):
         confirm_password = data.get('confirm_password')
         if password != confirm_password:
             raise serializers.ValidationError("Password didn't match")
-        email = data.get('email')
-        user = CustomUser.objects.filter(email=email).first()
-        code = user.generate_verify_code()
-        return {
-            'message': 'Confirmation code is sent to your email',
-            'code': code
-        }
-
-    
-class RegisterVerifySerializer(serializers.Serializer):
-    email = serializers.CharField()
-    code = serializers.CharField()
+        return data
 
     def create(self, validated_data):
         user = CustomUser.objects.create_user(
@@ -35,7 +26,15 @@ class RegisterVerifySerializer(serializers.Serializer):
             password = validated_data['password'],
             is_active = False,
         )
-        return user
+        code = user.generate_verify_code()
+        return {
+            'message': 'Confirmation code is sent to your phone number',
+            'code': code
+        }
+    
+class RegisterVerifySerializer(serializers.Serializer):
+    email = serializers.CharField()
+    code = serializers.CharField()
 
 class ResendCodeSerializer(serializers.Serializer):
     email = serializers.CharField()

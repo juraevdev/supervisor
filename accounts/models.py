@@ -35,6 +35,7 @@ class CustomUser(AbstractUser):
 
         return code
 
+
 class UserConfirmation(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     code = models.CharField(max_length=5)
