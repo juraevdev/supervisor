@@ -7,7 +7,6 @@ from .models import CustomUser, UserConfirmation
 import logging
 from accounts.serializers import ( 
     RegisterSerializer,
-    RegisterVerifySerializer,
     ResendCodeSerializer,
     LoginSerializer,
     LogoutSerializer,
@@ -49,6 +48,7 @@ class RegisterVerifyApiView(APIView):
                 return Response({'error': 'Invalid or expired code'}, status=status.HTTP_400_BAD_REQUEST)
         except CustomUser.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
 
 class ResendCodeApiView(generics.GenericAPIView):
     serializer_class = ResendCodeSerializer

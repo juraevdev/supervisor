@@ -28,7 +28,7 @@ const Expense = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [editedOutcome, setEditedOutcome] = useState({ expense: "", amount: "" });
   const [editingId, setEditingId] = useState(null);
-  const [openModal, setOpenModal] = useState(false);
+
 
   // Handle opening and closing menus
   const handleMenuClick = (id, event) => {
@@ -51,6 +51,7 @@ const Expense = () => {
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setEditingId(null);
+    handleCloseMenu();
   };
 
   const handleEdit = (outcome) => {
@@ -63,7 +64,7 @@ const Expense = () => {
         expense: editedOutcome.expense,
         amount: editedOutcome.amount,
       };
-      await UpdateOutcome(editingId, updatedData);
+      await UpdateOutcome(editingId, updatedData);  
       setRefresh((prev) => !prev);
       handleCloseDialog();
       handleCloseMenu();
@@ -97,16 +98,14 @@ const Expense = () => {
         const fetchedData = response.data?.outcomes || [];
         setExpenseData(fetchedData);
         setDateTotal(response.data.total || 0);
-        setOpenModal(true);
+        
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     }
   };
 
-  const handleCloseModal = () => {
-    setOpenModal(false);
-  };
+
   useEffect(() => {
     const fetchAllOutcomes = async () => {
       try {

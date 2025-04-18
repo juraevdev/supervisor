@@ -7,6 +7,7 @@ from django.contrib.auth.hashers import make_password
 class RegisterSerializer(serializers.Serializer):
     phone_number = serializers.CharField()
     first_name = serializers.CharField()
+    last_name = serializers.CharField()
     email = serializers.CharField()
     password = serializers.CharField()
     confirm_password = serializers.CharField()
@@ -22,6 +23,7 @@ class RegisterSerializer(serializers.Serializer):
         user = CustomUser.objects.create_user(
             phone_number = validated_data['phone_number'],
             first_name = validated_data['first_name'],
+            last_name = validated_data['last_name'],
             email = validated_data['email'],
             password = validated_data['password'],
             is_active = False,

@@ -1,5 +1,4 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -19,6 +18,7 @@ const schema = yup.object().shape({
 
 const Login = () => {
   const navigate = useNavigate(); 
+  const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -39,6 +39,8 @@ const Login = () => {
       navigate("/");
     } catch (error) {
       setApiError(error.response?.data?.detail || "Login xatosi. Qayta urinib ko'ring.");
+    } finally {
+      setLoading(false);
     }
   };
   
@@ -58,7 +60,9 @@ const Login = () => {
         <input {...register("password")} type="password" placeholder="Parol" />
         <p>{errors.password?.message}</p>
 
-        <button type="submit" className="signupe">Login</button>
+        <button type="submit" className="signupe" disabled={loading}>
+          {loading ? "Yuklanmoqda..." : "Login"}
+        </button>
         {apiError && <p className="error">{apiError}</p>}
         <a href="/request" className="request">Parol esdan chiqdimi?</a>
         <p className="sign">Akkountingiz yo'qmi?</p>

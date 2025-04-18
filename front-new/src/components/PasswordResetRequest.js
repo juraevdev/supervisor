@@ -15,6 +15,7 @@ const schema = yup.object().shape({
 const PasswordResetRequest = () => {
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -25,10 +26,12 @@ const PasswordResetRequest = () => {
   });
 
   const handleResetRequest = async (data) => {
+    setLoading(true);
     try {
       const response = await api.post("api/v1/accounts/password/request/", {
         email: data.email,
       });
+      console.log(response, "response when success")
 
       alert("Emailingizga tasdiqlash kodi yuborildi!");
       navigate("/verify");
@@ -38,6 +41,8 @@ const PasswordResetRequest = () => {
       } else {
         setError("Tasdiqlash kodini yuborishda xatolik yuz berdi.");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -55,7 +60,9 @@ const PasswordResetRequest = () => {
             <p style={{ color: "red" }}>{errors.email.message}</p>
           )}
         </div>
-        <button type="submit" className="signupe">Kod olish</button>
+        <button type="submit" className="signupe" disabled={loading}>
+          {loading ? "Yuklanmoqda..." : "Kod olish"}
+        </button>
       </form>
       {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
     </div>

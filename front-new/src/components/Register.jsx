@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { registerUser } from "../services/api";
-import { Link, useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom"; 
 import './register.css';
+
 
 
 const schema = yup.object().shape({
@@ -26,6 +27,7 @@ const schema = yup.object().shape({
 });
 
 const Register = () => {
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate(); 
   const {
     register,
@@ -37,10 +39,12 @@ const Register = () => {
 
 
   const onSubmit = async (data) => {
+    setLoading(true);
     try {
       const response = await registerUser(data);
       alert("Ro'yxatdan o'tish muvaffaqiyatli!");
       navigate("/register/verify");
+      console.log(response, "response when success")
     } catch (error) {
       console.error(error.response?.data || "Serverda xatolik yuz berdi");
       alert("Xatolik yuz berdi. Iltimos, qayta urining.");
@@ -80,7 +84,10 @@ const Register = () => {
         <p>{errors.confirm_password?.message}</p>
 
         {/* Tugma */}
-        <button type="submit" className="signupe">Ro'yxatdan o'tish</button>
+        <button type="submit" className="signupe" disabled={loading}>
+        {loading ? "Yuklanmoqda..." : "Ro'yxatdan o'tish"}  
+        </button>
+        
         <a href="sign-in" className="nav-linke">Kirish</a>
       </form>
     </div>

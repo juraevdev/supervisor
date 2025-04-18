@@ -6,16 +6,9 @@ function App() {
   const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState('');
   const [editingId, setEditingId] = useState(null);
-  const [editText, setEditText] = useState('');
+  const [editText, setEditText] = useState({ name: "" });
+  const [refresh, setRefresh] = useState(true);
 
-
-  useEffect(() => {
-    const loadTodos = async () => {
-      const data = await fetchAllTodos();
-      setTodos(data);
-    };
-    loadTodos();
-  }, []);
 
   const handleAddTodo = async (e) => {
     e.preventDefault();
@@ -24,6 +17,7 @@ function App() {
       if (newItem) {
         setTodos([...todos, { id: newItem.id, text: newItem.name, completed: false }]);
         setNewTodo('');
+        setRefresh((prev) => !prev);
       }
     }
   };
@@ -40,12 +34,39 @@ function App() {
     }
   };
 
-  const handleSaveEdit = async (id) => {
-    if (await updateTodo(id, { name: editText })) {
-      setTodos(todos.map(todo => todo.id === id ? { ...todo, name: editText } : todo));
+  // const handleSaveEdit = async (id) => {
+  //   if (await updateTodo(id, { name: editText })) {
+  //     setTodos(todos.map(todo => todo.id === id ? { ...todo, name: editText } : todo));
+  //     setRefresh((prev) => !prev);
+  //     setEditingId(null);
+  //   }
+  // };
+
+  const handleSaveEdit = async () => {
+    try {
+      const updatedTodo = { name: editText };
+      await updateTodo(editingId, updatedTodo);
+
+      setTodos(todos.map(todo =>
+        todo.id === editingId ? { ...todo, name: editText } : todo
+      ));
+
       setEditingId(null);
+      setRefresh((prev) => !prev);
+    } catch (error) {
+      console.error("Error updating todo:", error);
     }
   };
+
+
+
+  useEffect(() => {
+    const loadTodos = async () => {
+      const data = await fetchAllTodos();
+      setTodos(data);
+    };
+    loadTodos();
+  }, [refresh]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 to-purple-100 py-8 px-4">
@@ -73,7 +94,7 @@ function App() {
                   <>
                     <input
                       type="text"
-                      value={editText}
+                      value={editText.name}
                       onChange={(e) => setEditText(e.target.value)}
                       className="flex-1 px-3 py-1 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
@@ -93,9 +114,19 @@ function App() {
                       className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500 flex-shrink-0"
                     />
                     <span className={`flex-1 ${todo.completed ? 'line-through text-gray-500' : 'text-gray-800'}`}>{todo.name}</span>
-                    <button onClick={() => setEditingId(todo.id)} className="text-gray-500 hover:text-indigo-600">
+                    {/* <button onClick={() => setEditingId(todo.id)} className="text-gray-500 hover:text-indigo-600">
+                      <Edit size={20} />
+                    </button> */}
+                    <button
+                      onClick={() => {
+                        setEditingId(todo.id);
+                        setEditText({ name: todo.name });
+                      }}
+                      className="text-gray-500 hover:text-indigo-600"
+                    >
                       <Edit size={20} />
                     </button>
+
                     <button
                       onClick={() => {
                         console.log("Deleting todo with ID:", todo.id);

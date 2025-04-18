@@ -7,17 +7,21 @@ const RegisterVerify = () => {
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
+    setLoading(true);
     e.preventDefault();
     try {
       await api.post("api/v1/accounts/register/verify/", { email, code });
       setMessage("Ro'yxatdan o'tish tasdiqlandi");
-      navigate("/"); 
+      navigate("/");
     } catch (error) {
       setMessage("Tasdiqlash kodi noto'g'ri yoki eski.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -38,12 +42,12 @@ const RegisterVerify = () => {
           onChange={(e) => setCode(e.target.value)}
           required
         />
-        <button type="submit" className="verify">
-          Tasdiqlash
+        <button type="submit" className="signupe" disabled={loading}>
+          {loading ? "Yuklanmoqda..." : "Tasdiqlash"}
         </button>
         <Link to="/resend">
-          <button type="button" className="resend">
-            Kodni qayta jo'natish
+          <button type="submit" className="signupe" disabled={loading}>
+            {loading ? "Yuklanmoqda..." : "Kodni qayta yuborish"}
           </button>
         </Link>
       </form>
