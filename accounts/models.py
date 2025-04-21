@@ -1,10 +1,11 @@
-import random, datetime
+import random
+import datetime
 from django.db import models
 from django.utils import timezone
 from django.core.mail import send_mail
 from django.contrib.auth.models import AbstractUser
 from accounts.managers import CustomUserManager
-
+from django.conf import settings
 
 
 class CustomUser(AbstractUser):
@@ -17,19 +18,19 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.first_name
-    
+
     def generate_verify_code(self):
         code = ''.join(str(random.randint(0, 9)) for _ in range(5))
         UserConfirmation.objects.create(
-            user = self,
-            code = code,
-            expires = timezone.now() + datetime.timedelta(minutes=2)
+            user=self,
+            code=code,
+            expires=timezone.now() + datetime.timedelta(minutes=2)
         )
-        
+
         send_mail(
             'Email verification code',
             f'Your verification code is: {code}',
-            'juraevdev@ya.ru',
+            settings.EMAIL_HOST_USER,
             [self.email],
             fail_silently=False,
         )

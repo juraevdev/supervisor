@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { loginUser } from "../services/api";
+import { Link } from 'react-router-dom';
+
 
 const schema = yup.object().shape({
   phone_number: yup
@@ -66,7 +68,7 @@ const Login = () => {
         {apiError && <p className="error">{apiError}</p>}
         <a href="/request" className="request">Parol esdan chiqdimi?</a>
         <p className="sign">Akkountingiz yo'qmi?</p>
-        <a href="sign-up" className="nav-linke">Ro'yxatdan o'tish</a>
+        <Link to="/sign-up" className="nav-linke">Ro'yxatdan o'tish</Link>
       </form>
     </div>
   );
