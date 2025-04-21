@@ -7,7 +7,7 @@ from django.utils.timezone import localdate, now, timedelta
 class Outcome(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     expense = models.TextField()
-    amount = models.DecimalField(max_digits=10, decimal_places=False)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
     day = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

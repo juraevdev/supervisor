@@ -1,7 +1,6 @@
 from django.db import models
 from accounts.models import CustomUser
-from datetime import timedelta
-import datetime
+
 
 # Create your models here.
 class Todo(models.Model):

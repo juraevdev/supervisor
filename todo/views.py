@@ -1,5 +1,5 @@
-from .models import Todo
-from .serializers import TodoSerializer, TodoCreateSerializer
+from todo.models import Todo
+from todo.serializers import TodoSerializer, TodoCreateSerializer
 from rest_framework import generics, status
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404

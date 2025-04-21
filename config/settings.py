@@ -1,8 +1,8 @@
-import os
 from pathlib import Path
 from datetime import timedelta
 from decouple import config
-import environ, os
+import environ
+import os
 import dj_database_url
 
 env = environ.Env()
@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
-    'django.contrib.contenttypes',  
+    'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -55,7 +55,7 @@ INSTALLED_APPS += [
 CORS_ALLOW_ALL_ORIGINS = True
 
 
-CELERY_BROKER_URL = 'redis://localhost:6380/0'  
+CELERY_BROKER_URL = 'redis://localhost:6380/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 
@@ -63,7 +63,7 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_BEAT_SCHEDULE = {
     'deactivate-expired-todos': {
         'task': 'todo.tasks.deactivate_expired_todos',
-        'schedule': timedelta(minutes=1),  
+        'schedule': timedelta(minutes=1),
     },
 }
 
@@ -71,7 +71,7 @@ CELERY_BEAT_SCHEDULE = {
 CELERY_BEAT_SCHEDULE.update({
     'activate-todos-at-planned-time': {
         'task': 'todo.tasks.activate_todos_at_planned_time',
-        'schedule': timedelta(minutes=1), 
+        'schedule': timedelta(minutes=1),
     },
 })
 
@@ -84,7 +84,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=7), 
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=60),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
@@ -139,19 +139,24 @@ CHANNEL_LAYERS = {
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': env('DB_NAME'),
-#         'USER': env('DB_USER'),
-#         'PASSWORD': env('DB_PASSWORD'),
-#         'HOST': 'postgres',    
+#         'NAME': 'supervisor_xbtg',
+#         'USER': 'my_user',
+#         'PASSWORD': '5aNpiAYvEz8L4g2HMfXbqaFmILHxrmxa',
+#         'HOST': 'dpg-d02vgdbe5dus73c6spm0-a',
 #         'PORT': '5432',
+#         'OPTIONS': {
+#             'sslmode': 'require',
+#         },
 #     }
 # }
 
 DATABASES = {
-    'default': dj_database_url.parse(config('DATABASE_URL'))
+    'default': dj_database_url.parse(
+        config('DATABASE_URL'),
+        conn_max_age=600,
+        ssl_require=True
+    )
 }
-
-
 
 
 # Password validation
@@ -190,11 +195,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),  
+    os.path.join(BASE_DIR, 'static'),
 ]
 
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 

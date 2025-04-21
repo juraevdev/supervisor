@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils import timezone
 from rest_framework.views import APIView
-from .models import CustomUser, UserConfirmation
+from accounts.models import CustomUser, UserConfirmation
 import logging
 from accounts.serializers import ( 
     RegisterSerializer,
