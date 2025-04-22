@@ -23,6 +23,7 @@
     "axios": "^1.7.9",
     "bootstrap": "^5.3.3",
     "date-fns": "^4.1.0",
+    "framer-motion": "^12.7.4",
     "lucide-react": "^0.475.0",
     "postcss-cli": "^11.0.0",
     "react": "^18.3.1",
@@ -65,8 +66,8 @@
   "devDependencies": {
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
-    "tailwindcss": "^3.4.17",
-    "react-refresh": "^0.14.0"
+    "react-refresh": "^0.14.0",
+    "tailwindcss": "^3.4.17"
   },
   "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
   "author": "",
