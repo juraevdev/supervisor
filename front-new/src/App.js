@@ -37,8 +37,8 @@ function App() {
         </Route>
 
         {/* Profile and Other Features */}
-        <Route path="/profile" element={<ProfileDetails />} />
         <Route path="/expenses" element={<Outcomes />} />
+        <Route path="/profile" element={<ProfileDetails />} />
         <Route path='/todo' element={<Todo/>}/>
       </Routes>
     </BrowserRouter>

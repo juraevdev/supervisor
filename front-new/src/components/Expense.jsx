@@ -22,6 +22,8 @@ const Expense = () => {
   const [dateTotal, setDateTotal] = useState(0);
   const [refresh, setRefresh] = useState(true);
 
+
+
   // Menu and Dialog states
   const [anchorEl, setAnchorEl] = useState(null);
   const [openMenuId, setOpenMenuId] = useState(null);
@@ -64,7 +66,7 @@ const Expense = () => {
         expense: editedOutcome.expense,
         amount: editedOutcome.amount,
       };
-      await UpdateOutcome(editingId, updatedData);  
+      await UpdateOutcome(editingId, updatedData);
       setRefresh((prev) => !prev);
       handleCloseDialog();
       handleCloseMenu();
@@ -98,13 +100,20 @@ const Expense = () => {
         const fetchedData = response.data?.outcomes || [];
         setExpenseData(fetchedData);
         setDateTotal(response.data.total || 0);
-        
+
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     }
   };
 
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("uz-UZ", {
+      style: "currency",
+      currency: "UZS",
+      maximumFractionDigits: 0,
+    }).format(amount)
+  }
 
   useEffect(() => {
     const fetchAllOutcomes = async () => {
@@ -128,151 +137,166 @@ const Expense = () => {
 
 
   return (
-    <>
-      <div className="max-w-4xl mx-auto py-8 px-8 bg-white shadow-lg rounded-lg" style={{ marginTop: "20px" }}>
-        <h1 className="text-3xl font-bold text-center mb-6 text-blue-600">Today's Expenses</h1>
-        <div className="text-lg font-semibold mb-6 text-center text-gray-800">
-          Total for today: <span className="text-green-500">{todayTotal.toLocaleString("uz-UZ", { style: "currency", currency: "UZS" })}</span>
-        </div>
-        <div className="space-y-6">
-          {outcomes.map((outcome) => (
-            <div key={outcome.id} className="flex justify-between items-center bg-gray-100 p-4 rounded-md shadow-sm">
-              <div className="text-lg font-medium">{outcome.expense}</div>
-              <div className="flex items-center gap-4">
-                <span className="text-lg font-bold text-gray-700">{outcome.amount} so'm</span>
-                <IconButton onClick={(event) => handleMenuClick(outcome.id, event)}>
-                  <MoreVertIcon />
-                </IconButton>
-                <Menu
-                  anchorEl={anchorEl}
-                  open={openMenuId === outcome.id}
-                  onClose={handleCloseMenu}
-                >
-                  <MenuItem onClick={() => handleEdit(outcome)}>Edit</MenuItem>
-                  <MenuItem onClick={() => handleDelete(outcome.id)}>Delete</MenuItem>
-                </Menu>
-              </div>
-            </div>
-          ))}
+    <div className="bg-gray-900 min-h-screen py-8 overflow-x-hidden">
+      <div className="max-w-4xl mx-auto py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8 bg-gray-800 shadow-lg rounded-lg">
+        <div>
+          <h1 className="text-3xl font-bold text-center mb-2 text-white">Today's Expenses</h1>
+          <p className="text-xl text-white font-bold text-center">
+            Total: <span className="text-white ml-2">
+              {todayTotal.toLocaleString("uz-UZ", { style: "currency", currency: "UZS" })}
+            </span>
+          </p>
         </div>
 
-        <Dialog open={openDialog} onClose={handleCloseDialog}>
-          <DialogTitle>Edit Expense</DialogTitle>
-          <DialogContent>
-            <TextField
-              label="Expense Name"
-              fullWidth
-              value={editedOutcome.expense}
-              onChange={(e) => setEditedOutcome({ ...editedOutcome, expense: e.target.value })}
-            />
-            <TextField
-              label="Amount"
-              fullWidth
-              type="number"
-              value={editedOutcome.amount}
-              onChange={(e) => setEditedOutcome({ ...editedOutcome, amount: e.target.value })}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseDialog} color="secondary">
-              Cancel
-            </Button>
-            <Button onClick={handleSaveEdit} color="primary">
-              Save
-            </Button>
-          </DialogActions>
-        </Dialog>
 
-        <div className="mt-8 flex justify-center gap-4">
-        <Link to="/expenses">
-          <button className="px-6 py-3 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition">
-            See All
-          </button>
-        </Link>
-        <Link to="/home/add-expense">
-          <button className="px-6 py-3 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition">
-            Add
-          </button>
-        </Link>
-      </div>
-
-
-        <div className="mt-8 text-center">
-          <h2 className="text-xl font-semibold mb-4">Select a Date</h2>
-          <div className="flex justify-center items-center gap-4">
-            <DatePicker
-              selected={selectedDate}
-              onChange={handleDateChange}
-              dateFormat="yyyy-MM-dd"
-              isClearable
-              placeholderText="Choose a date"
-              className="border px-4 py-2 rounded-md"
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              disabled={!selectedDate}
-              onClick={handleSubmit}
-            >
-              Get Data
-            </Button>
-          </div>
-          {expenseData && expenseData.length > 0 ? (
-            <div>
-              <h2 id="modal-title">Expense Data for {selectedDate ? selectedDate.toDateString() : ""}</h2>
-              {expenseData.map((outcome, index) => (
-                <div style={{ display: "flex", gap: "1rem", alignItems: "center" }} key={index}>
-                  <div style={{ flex: 1 }}>
-                    <label>Expense Name:</label>
-                    <input
-                      type="text"
-                      value={outcome.expense || ""}
-                      readOnly
-                      style={{ width: "100%" }}
-                    />
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <label>Amount:</label>
-                    <input
-                      type="text"
-                      value={outcome.amount || ""}
-                      readOnly
-                      style={{ width: "100%" }}
-                    />
-                  </div>
-                </div>
-              ))}
-              <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-                <div style={{ flex: 1 }}>
-                  <label>Total</label>
-                  <input
-                    type="text"
-                    value={dateTotal.toLocaleString("uz-UZ", { style: "currency", currency: "UZS" })}
-                    readOnly
-                    style={{ width: "100%" }}
-                  />
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div></div>
-          )}
-        </div>
-        <div className="mt-8">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">View More</h2>
+        <div className="p-6">
           <div className="space-y-4">
-            <div className="flex justify-between items-center bg-gray-100 p-4 rounded-lg">
-              <span className="font-medium">This week</span>
-              <span className="font-bold text-gray-700">{weeklyTotal.toLocaleString("uz-UZ", { style: "currency", currency: "UZS" })}</span>
+            {outcomes.map((outcome) => (
+              <div
+                key={outcome.id}
+                className="flex justify-between items-center p-2 rounded-lg bg-gray border border-gray-200 hover:shadow-lg dark:hover:shadow-slate-700 transition-shadow rounded-lg shadow-md w-full"
+              >
+                <div className="text-lg font-medium text-white">{outcome.expense}</div>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg font-bold text-white">{formatCurrency(outcome.amount)}</span>
+                  <div className="relative">
+                    <IconButton onClick={(event) => handleMenuClick(outcome.id, event)}>
+                      <MoreVertIcon className="text-white"/>
+                    </IconButton>
+                    <Menu
+                      anchorEl={anchorEl}
+                      onClose={handleCloseMenu}
+                    >
+                    </Menu>
+                    {openMenuId === outcome.id && (
+                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
+                        <div className="py-1">
+                          <button
+                            onClick={() => {
+                              handleEdit(outcome)
+                              setOpenMenuId(null)
+                            }}
+                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(outcome.id)}
+                            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-8 flex justify-center gap-4">
+            <Link to="/expenses" className="no-underline">
+              <button
+                className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg shadow-md hover:bg-gray-300 transition flex items-center gap-2"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="8" y1="6" x2="21" y2="6" />
+                  <line x1="8" y1="12" x2="21" y2="12" />
+                  <line x1="8" y1="18" x2="21" y2="18" />
+                  <line x1="3" y1="6" x2="3.01" y2="6" />
+                  <line x1="3" y1="12" x2="3.01" y2="12" />
+                  <line x1="3" y1="18" x2="3.01" y2="18" />
+                </svg>
+                See All
+              </button>
+            </Link>
+            <Link to="/home/add-expense" className="no-underline">
+              <button
+                className="px-6 py-3 bg-emerald-600 text-white rounded-lg shadow-md hover:bg-emerald-700 transition flex items-center gap-2"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Add Expense
+              </button>
+            </Link>
+          </div>
+
+          <div className="mt-10 text-center">
+            <h2 className="text-xl font-semibold mb-4 text-white">Select Date</h2>
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+              <DatePicker
+                selected={selectedDate}
+                onChange={handleDateChange}
+                dateFormat="yyyy-MM-dd"
+                isClearable
+                placeholderText="Choose a date"
+                className="border px-4 py-2 rounded-md w-full sm:w-auto"
+              />
+              <Button variant="contained" color="primary" disabled={!selectedDate} onClick={handleSubmit} className="text-white">
+                Get Data
+              </Button>
             </div>
-            <div className="flex justify-between items-center bg-gray-100 p-4 rounded-lg">
-              <span className="font-medium">This month</span>
-              <span className="font-bold text-gray-700">{monthlyTotal.toLocaleString("uz-UZ", { style: "currency", currency: "UZS" })}</span>
+
+            {expenseData.length > 0 && (
+              <div className="mt-6 bg-gray-400 rounded-lg shadow-sm p-4">
+                <h3 className="text-lg font-semibold mb-4">
+                  Expenses for {selectedDate ? selectedDate.toLocaleDateString() : ""}
+                </h3>
+                <div className="space-y-4">
+                  {expenseData.map((expense, index) => (
+                    <div key={index} className="flex justify-between items-center p-3 rounded-md bg-gray-200">
+                      <span className="font-medium">{expense.expense}</span>
+                      <span className="font-bold">{formatCurrency(expense.amount)}</span>
+                    </div>
+                  ))}
+                  <div className="flex justify-between items-center p-3 rounded-md bg-teal-50 font-bold">
+                    <span>Total</span>
+                    <span className="text-teal-700">{formatCurrency(dateTotal)}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-8 bg-gray-400 p-6 rounded-lg">
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">Summary</h2>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center p-3 rounded-lg bg-gray-200 border border-gray-200">
+                <span className="font-medium">This week</span>
+                <span className="font-bold text-teal-700">{formatCurrency(weeklyTotal)}</span>
+              </div>
+              <div className="flex justify-between items-center p-3 rounded-lg bg-gray-200 border border-gray-200">
+                <span className="font-medium">This month</span>
+                <span className="font-bold text-teal-700">{formatCurrency(monthlyTotal)}</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

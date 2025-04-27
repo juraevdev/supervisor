@@ -30,7 +30,7 @@ class RegisterSerializer(serializers.Serializer):
         )
         code = user.generate_verify_code()
         return {
-            'message': 'Confirmation code is sent to your phone number',
+            'message': 'Confirmation code is sent to your email',
             'code': code
         }
     

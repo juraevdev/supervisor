@@ -1,7 +1,13 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react"
 import { fetchAllOutcomes, deleteOutcome, UpdateOutcome } from "../utils/api";
-import { IconButton, Menu, MenuItem, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button } from "@mui/material";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import {Button} from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { ArrowLeft, MoreVertical, Plus } from "lucide-react"
 
 const Expense = () => {
   const [outcomes, setOutcomes] = useState([]);
@@ -76,66 +82,106 @@ const Expense = () => {
     fetchExpenses();
   }, [refresh]);
 
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("uz-UZ", {
+      style: "currency",
+      currency: "UZS",
+      maximumFractionDigits: 0,
+    }).format(amount)
+  }
+
   return (
-    <div className="max-w-2xl mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">All Expenses</h1>
-      <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-lg font-semibold rounded-lg p-4 mb-8 shadow-md text-center">
-        Total: <span className="font-bold text-xl">{total.toLocaleString("uz-UZ", { style: "currency", currency: "UZS" })}</span>
+    <div className="container mx-auto py-8 px-4">
+      <div className="flex justify-between items-center mb-6">
+        <Button></Button>
+        <Button asChild className="gap-2 bg-emerald-600 hover:bg-emerald-700">
+          <Link href="/add-expense">
+            <Plus className="h-4 w-4" />
+            Add Expense
+          </Link>
+        </Button>
       </div>
-      <div className="space-y-6">
-        {outcomes.map((outcome) => (
-          <div style={{ display: "flex", gap: "1rem", alignItems: "center" }} key={outcome.id}>
-            <TextField label="Expense Name" value={outcome.expense || ""} fullWidth />
-            <TextField label="Amount" value={outcome.amount || ""} fullWidth />
-            <IconButton
-              aria-label="actions"
-              onClick={(event) => handleMenuClick(outcome.id, event)}
-              aria-controls={openMenuId === outcome.id ? "actions-menu" : undefined}
-              aria-haspopup="true"
-              aria-expanded={openMenuId === outcome.id ? "true" : undefined}
-            >
-              <MoreVertIcon />
-            </IconButton>
-            <Menu
-              id="actions-menu"
-              anchorEl={anchorEl}
-              open={openMenuId === outcome.id}
-              onClose={handleCloseMenu}
-              MenuListProps={{ "aria-labelledby": "actions-button" }}
-            >
-              <MenuItem onClick={() => handleOpenDialog(outcome)}>Edit</MenuItem>
-              <MenuItem onClick={() => handleDelete(outcome.id)}>Delete</MenuItem>
-            </Menu>
-          </div>
-        ))}
-      </div>
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>Edit Expense</DialogTitle>
+
+      <Card>
+        <CardHeader className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white">
+          <CardTitle className="text-2xl font-bold">All Expenses</CardTitle>
+          <p className="text-lg">
+            Total: <span className="font-bold">{formatCurrency(totalAmount)}</span>
+          </p>
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Expense</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead className="text-right">Amount</TableHead>
+                <TableHead className="w-[70px]"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {expenses.map((expense) => (
+                <TableRow key={expense.id}>
+                  <TableCell className="font-medium">{expense.expense}</TableCell>
+                  <TableCell>{expense.date}</TableCell>
+                  <TableCell className="text-right font-bold">{formatCurrency(expense.amount)}</TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleEdit(expense)}>Edit</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDelete(expense.id)} className="text-red-600">
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent>
-          <TextField
-            label="Expense Name"
-            value={editedOutcome.expense}
-            onChange={(e) => setEditedOutcome((prev) => ({ ...prev, expense: e.target.value }))}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Amount"
-            value={editedOutcome.amount}
-            onChange={(e) => setEditedOutcome((prev) => ({ ...prev, amount: Number(e.target.value) }))}
-            fullWidth
-            margin="normal"
-            type="number"
-          />
+          <DialogHeader>
+            <DialogTitle>Edit Expense</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="expense">Expense Name</Label>
+              <Input
+                id="expense"
+                value={editedExpense.expense}
+                onChange={(e) => setEditedExpense({ ...editedExpense, expense: e.target.value })}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="amount">Amount</Label>
+              <Input
+                id="amount"
+                type="number"
+                value={editedExpense.amount}
+                onChange={(e) => setEditedExpense({ ...editedExpense, amount: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCloseDialog}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveEdit}>Save Changes</Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="secondary">Cancel</Button>
-          <Button onClick={handleSaveEdit} color="primary">Save</Button>
-        </DialogActions>
       </Dialog>
     </div>
-  );
-};
+  )
+}
 
 
-export default Expense;
+export default ModernExpenseTracker

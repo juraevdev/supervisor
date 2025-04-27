@@ -38,7 +38,7 @@ function Header() {
   const togglePopup = () => setShowPopup(!showPopup);
 
   return (
-    <header className="w-full dark:bg-gray-900 text-gray-800 dark:text-white shadow-md px-4 py-3 flex justify-between items-center relative z-50">
+    <header className="w-full dark:bg-gray-950 text-gray-800 dark:text-white shadow-md px-4 py-3 flex justify-between items-center relative z-50">
       <div className="text-xl font-bold">Task & Spend</div>
       <nav className="flex flex-row md:flex gap-6 items-center">
         <Link to="/home/expense" className="text-white no-underline hover:text-blue-500">Expenses</Link>

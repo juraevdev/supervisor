@@ -7,6 +7,7 @@ from accounts.models import CustomUser, UserConfirmation
 import logging
 from accounts.serializers import ( 
     RegisterSerializer,
+    RegisterVerifySerializer,
     ResendCodeSerializer,
     LoginSerializer,
     LogoutSerializer,
@@ -29,7 +30,8 @@ class RegisterApiView(generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class RegisterVerifyApiView(APIView):
+class RegisterVerifyApiView(generics.GenericAPIView):
+    serializer_class = RegisterVerifySerializer
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
         code = request.data.get('code')
