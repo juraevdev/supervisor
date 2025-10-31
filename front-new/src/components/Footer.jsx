@@ -9,7 +9,7 @@ function Footer() {
                     <a href="#">Follow us on Social Media</a>
                 </div>
                 <p>&copy; 2024 Task & Spend. All rights reserved.</p>
-            </footer>
+            </footer> 
         </div>
     )
 }
