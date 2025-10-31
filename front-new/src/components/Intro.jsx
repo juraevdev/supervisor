@@ -19,7 +19,7 @@ const ExpenseIntro = () => {
     "Experience a seamless way to manage your life.",
   ];
 
-  // Typing effect logic
+  // Typing effect
   useEffect(() => {
     if (currentWordIndex < words.length) {
       if (currentLine.length < words[currentWordIndex].length) {
@@ -39,19 +39,20 @@ const ExpenseIntro = () => {
   }, [currentLine, currentWordIndex]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 text-white relative">
-      {/* Skip Button */}
+    <div className="min-h-screen bg-gray-900 text-white relative">
       <button
         onClick={() => navigate("/home")}
-        className="absolute top-4 right-4 bg-white text-blue-500 font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-gray-200 transition duration-300"
+        className="cursor-pointer absolute top-4 right-4 bg-white text-blue-500 font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-gray-200 transition duration-300"
       >
         Skip
       </button>
 
-      {/* Hero Section */}
-      <div className="flex flex-col items-center justify-center text-center p-8 h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
-        <h1 className="text-5xl font-extrabold mb-6">Expense Manager</h1>
-        <div className="text-lg space-y-4">
+      <div className="flex flex-col items-center justify-center text-center px-4 py-12 md:py-24 min-h-screen ...">
+
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-6">
+          Expense Manager
+        </h1>
+        <div className="text-base sm:text-lg space-y-4">
           {lines.map((line, index) => (
             <p key={index} className="animate-fadeIn text-white">
               {line}
@@ -66,16 +67,16 @@ const ExpenseIntro = () => {
         </div>
         <button
           onClick={() => navigate("/home/expense")}
-          className="mt-8 bg-white text-blue-500 font-semibold py-3 px-6 rounded-lg shadow-lg hover:bg-gray-200 transition duration-300 transform hover:scale-105"
+          className="cursor-pointer mt-8 bg-white text-blue-500 font-semibold py-3 px-6 rounded-lg shadow-lg hover:bg-gray-200 transition duration-300 transform hover:scale-105"
         >
           Get Started
         </button>
       </div>
 
       {/* Features Section */}
-      <div className="py-20 bg-white text-black text-center">
-        <h2 className="text-4xl font-bold mb-8">Features of Expense Manager</h2>
-        <div className="flex flex-wrap justify-center gap-8">
+      <div className="py-16 px-4 lg:px-16 xl:px-24 bg-gray-900 text-white text-center">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8">Features of Expense Manager</h2>
+        <div className="flex flex-wrap justify-center gap-6">
           <FeatureCard
             title="Track Expenses"
             image={trackExpenseImage}
@@ -95,9 +96,9 @@ const ExpenseIntro = () => {
       </div>
 
       {/* Testimonials Section */}
-      <div className="py-20 bg-gray-100 text-black text-center">
-        <h2 className="text-3xl font-bold mb-6">What Our Users Say</h2>
-        <div className="flex flex-wrap justify-center gap-8">
+      <div className="py-16 px-4 bg-gray-900 text-black text-center">
+        <h2 className="text-2xl text-white sm:text-3xl font-bold mb-6">What Our Users Say</h2>
+        <div className="flex flex-wrap justify-center gap-6">
           <TestimonialCard
             name="Sarah Johnson"
             feedback="This app completely transformed the way I manage my expenses. Highly recommend!"
@@ -114,14 +115,14 @@ const ExpenseIntro = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="py-20 bg-gradient-to-r from-purple-600 to-pink-500 text-white text-center">
-        <h2 className="text-3xl font-bold mb-6">Ready to Take Control?</h2>
-        <p className="text-lg mb-8 text-white">
+      <div className="py-16 px-4 bg-gray-900 text-white text-center">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-6">Ready to Take Control?</h2>
+        <p className="text-base sm:text-lg mb-8 text-white">
           Start your journey to better financial management and task organization today!
         </p>
         <button
           onClick={() => navigate("/todos")}
-          className="bg-white text-purple-600 font-semibold py-3 px-6 rounded-lg shadow-lg hover:bg-gray-200 transition duration-300 transform hover:scale-105"
+          className="cursor-pointer w-full sm:w-auto bg-white text-purple-600 font-semibold py-3 px-6 rounded-lg shadow-lg hover:bg-gray-200 transition duration-300 transform hover:scale-105"
         >
           Explore Tasks
         </button>
@@ -133,10 +134,11 @@ const ExpenseIntro = () => {
 // Feature Card Component
 const FeatureCard = ({ title, image, description }) => {
   return (
-    <div className="max-w-xs bg-gray-100 rounded-lg shadow-md p-6 text-center hover:shadow-lg transition transform hover:scale-105">
-      <img src={image} alt={title} className="w-20 h-20 mx-auto mb-4 bg-transparent" />
+    <div className="w-full sm:w-[90%] md:w-[45%] lg:w-[30%] bg-gray-800 rounded-lg shadow-md p-6 text-center hover:shadow-lg transition transform hover:scale-105">
+      <img src={image} alt={title} className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4" />
+
       <h3 className="text-xl font-bold mb-2">{title}</h3>
-      <p className="text-black">{description}</p>
+      <p className="text-white">{description}</p>
     </div>
   );
 };
@@ -144,9 +146,9 @@ const FeatureCard = ({ title, image, description }) => {
 // Testimonial Card Component
 const TestimonialCard = ({ name, feedback }) => {
   return (
-    <div className="max-w-sm bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition transform hover:scale-105">
-      <p className="text-lg italic mb-4 text-black">"{feedback}"</p>
-      <h4 className="text-xl font-bold">- {name}</h4>
+    <div className="w-full sm:w-[90%] md:w-[45%] lg:w-[30%] bg-gray-800 rounded-lg shadow-md p-6 text-center hover:shadow-lg transition transform hover:scale-105">
+      <p className="text-lg italic mb-4 text-white">"{feedback}"</p>
+      <h4 className="text-xl font-bold text-white">- {name}</h4>
     </div>
   );
 };

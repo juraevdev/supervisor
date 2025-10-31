@@ -1,15 +1,14 @@
 function Footer() {
     return (
         <div>
-            <footer className="footer">
-                <div className="footer-links">
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Terms of Service</a>
-                    <a href="#">Contact Us</a>
-                    <a href="#">Follow us on Social Media</a>
+            <footer className="text-white bg-gray-800 dark:bg-gray-950 py-4 w-full text-center flex-shrink-0">
+                <div className="mb-2">
+                    <a href="#" className="text-slate-400 mx-4 no-underline">Privacy</a>
+                    <a href="#" className="text-slate-400 mx-4 no-underline">Terms</a>
+                    <a href="#" className="text-slate-400 mx-4 no-underline">Contact</a>
                 </div>
-                <p>&copy; 2024 Task & Spend. All rights reserved.</p>
-            </footer> 
+                <p className="text-blue-200 text-sm mt-2">&copy; 2025 Your Company</p>
+            </footer>
         </div>
     )
 }

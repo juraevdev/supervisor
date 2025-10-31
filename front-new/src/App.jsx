@@ -11,7 +11,7 @@ import Expense from './components/Expense';
 import AddExpense from './components/AddExpense';
 import Layout from './components/Layout';
 import ProfileDetails from './components/UserProfile';
-import Outcomes from './components/AllExpense';
+import Expenses from './components/AllExpense';
 import ExpenseIntro from './components/Intro';
 import Todo from './components/App';
 
@@ -21,8 +21,8 @@ function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<ExpenseIntro />} />
-        <Route path="/sign-in" element={<Login />} />
-        <Route path="/sign-up" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/verify" element={<PasswordResetVerify />} />
         <Route path="/reset" element={<Reset />} />
         <Route path="/request" element={<PasswordResetRequest />} />
@@ -34,12 +34,12 @@ function App() {
           <Route index element={<Home />} />
           <Route path="expense" element={<Expense />} />
           <Route path="add-expense" element={<AddExpense />} />
+          <Route path="expenses" element={<Expenses />} />
+          <Route path="profile" element={<ProfileDetails />} />
+          <Route path='todo' element={<Todo/>}/>
         </Route>
 
         {/* Profile and Other Features */}
-        <Route path="/profile" element={<ProfileDetails />} />
-        <Route path="/expenses" element={<Outcomes />} />
-        <Route path='/todo' element={<Todo/>}/>
       </Routes>
     </BrowserRouter>
   );
