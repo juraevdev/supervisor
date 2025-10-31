@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: "http://127.0.0.1:8000/api/v1/todos/",
+  baseURL: "https://supervisor-a0ki.onrender.com/api/v1/todos/",
   headers: {
     "Content-Type": "application/json",
   },
